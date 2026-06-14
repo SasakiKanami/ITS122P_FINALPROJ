@@ -3,15 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My First Web Page</title>
+    <title>WanderLustBagsPH | Shop</title>
+    <link rel="stylesheet" href="../css/shop_style.css">
 </head>
 <body>
 
-    <h1>Welcome to My Website</h1>
-    <p>This is a standard paragraph element describing the page content.</p>
-    
-    <!-- This is a comment: Adding an image and a link -->
-    <a href="https://www.w3schools.com" target="_blank">Visit W3Schools Tutorials</a>
+    <header>
+        <nav class="navbar">
+            <h2 class="logo">WanderLustBagsPH</h2>
+
+            <ul class="nav-links">
+                <li><a href="shop.html">Shop</a></li>
+                <li><a href="cart.html">Cart</a></li>
+                <li><a href="order_tracking.html">Orders</a></li>
+                <li><a href="profile.html">Profile</a></li>
+                <li><a href="login.html">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1>Shop Travel Bags and Accessories</h1>
+        <p>Global Finds Made Affordable</p>
+    </section>
+
+    <section class="shop-section">
+        <div class="shop-header">
+            <h2>Available Products</h2>
+            <input type="text" placeholder="Search bags...">
+        </div>
+
+        <div class="category-buttons">
+            <button>Latest Arrivals</button>
+            <button>Bags</button>
+            <button>Accessories</button>
+            <button>Others</button>
+        </div>
+
+        <div class="product-container">
+
+            <div class="product-card">
+                <img src="../images/bag-placeholder.jpg" alt="Travel Bag">
+                <h3>Travel Backpack</h3>
+                <p class="price">₱899</p>
+                <p class="stock">Stock: Available</p>
+                <button>View Details</button>
+                <button>Add to Cart</button>
+            </div>
+
+            <div class="product-card">
+                <img src="../images/bag-placeholder.jpg" alt="Shoulder Bag">
+                <h3>Shoulder Bag</h3>
+                <p class="price">₱599</p>
+                <p class="stock">Stock: Available</p>
+                <button>View Details</button>
+                <button>Add to Cart</button>
+            </div>
+
+            <div class="product-card">
+                <img src="../images/bag-placeholder.jpg" alt="Tote Bag">
+                <h3>Tote Bag</h3>
+                <p class="price">₱499</p>
+                <p class="stock">Stock: Available</p>
+                <button>View Details</button>
+                <button>Add to Cart</button>
+            </div>
+
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 WanderLustBagsPH. All rights reserved.</p>
+    </footer>
 
 </body>
 </html>
