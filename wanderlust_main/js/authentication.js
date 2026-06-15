@@ -49,7 +49,7 @@ import {
         loginForm.addEventListener("submit", async (e) => {
             e.preventDefault();
 
-            const email = loginForm.querySelector("input[placeholder='Username']").value.trim();
+            const email = loginForm.querySelector("input[placeholder='Email']").value.trim(); //this should not be placeholder='Username' because we are using email to login, not username
             const password = loginForm.querySelector("input[placeholder='Password']").value;
 
             try {
