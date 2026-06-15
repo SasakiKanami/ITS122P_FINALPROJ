@@ -1,25 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-
     <title>Forgot Password - Wanderlust</title>
 
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-
     <link rel="stylesheet" href="../css/login_style.css">
 </head>
 
 <body>
 
-    This page is for users who have forgotten their password. It will provide instructions on how to reset the password and regain access to their account.
+<div class="container">
+    <div class="form-box login">
+        <form id="forgot-form">
+            <h2>Reset Password</h2>
 
-    <a href="login.html">Back to Login</a>
+            <p>Enter your email address and we'll send you a link to reset your password.</p>
+
+            <br>
+
+            <div class="input-box">
+                <input type="email" placeholder="Email" required />
+                <i class='bx bxs-envelope'></i>
+            </div>
+
+            <button type="submit" class="btn">Send Reset Link</button>
+
+            <br><br>
+
+            <div class="forgot-link">
+                <a href="login.html">Back to Login</a>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<!-- Firebase Auth Script -->
+<script type="module" src="../js/authentication.js"></script>
 
 </body>
 </html>
