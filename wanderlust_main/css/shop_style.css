@@ -110,6 +110,18 @@ body {
     margin-bottom: 15px;
 }
 
+.details-btn {
+    display: inline-block;
+    padding: 10px 12px;
+    margin: 5px;
+    border: none;
+    background-color: #111;
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
 .product-card button {
     padding: 10px 12px;
     margin: 5px;
