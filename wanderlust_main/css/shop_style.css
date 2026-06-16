@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 
 * {
@@ -9,6 +10,17 @@ padding: 0;
 
 body {
     background-color: #fffef8;
+=======
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: #f8f8f8;
+>>>>>>> feature/user-pages-gavin
     color: #222;
 }
 
@@ -17,7 +29,11 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 20px 50px;
+<<<<<<< HEAD
     background-color: #5c491f;
+=======
+    background-color: #111;
+>>>>>>> feature/user-pages-gavin
     color: white;
 }
 
@@ -39,8 +55,12 @@ body {
 .hero {
     text-align: center;
     padding: 70px 20px;
+<<<<<<< HEAD
     background-color: #7c6c3f;
     color: #ebf9f7;
+=======
+    background-color: #e6e6e6;
+>>>>>>> feature/user-pages-gavin
 }
 
 .hero h1 {
@@ -113,6 +133,21 @@ body {
     margin-bottom: 15px;
 }
 
+<<<<<<< HEAD
+=======
+.details-btn {
+    display: inline-block;
+    padding: 10px 12px;
+    margin: 5px;
+    border: none;
+    background-color: #111;
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+>>>>>>> feature/user-pages-gavin
 .product-card button {
     padding: 10px 12px;
     margin: 5px;
@@ -130,5 +165,8 @@ footer {
     color: white;
     margin-top: 40px;
 }
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> feature/user-pages-gavin

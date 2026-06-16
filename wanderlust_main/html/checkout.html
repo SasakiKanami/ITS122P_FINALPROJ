@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WanderLustBagsPH | Checkout</title>
+    <link rel="stylesheet" href="../css/checkout_style.css">
+</head>
+<body>
+
+    <header>
+        <nav class="navbar">
+            <h2 class="logo">WanderLustBagsPH</h2>
+
+            <ul class="nav-links">
+                <li><a href="shop.html">Shop</a></li>
+                <li><a href="cart.html">Cart</a></li>
+                <li><a href="order_tracking.html">Orders</a></li>
+                <li><a href="profile.html">Profile</a></li>
+                <li><a href="login.html">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="checkout-section">
+        <h1>Checkout</h1>
+        <p class="checkout-description">Enter your shipping and payment details to complete your order.</p>
+
+        <div class="checkout-container">
+
+            <div class="checkout-form">
+                <h2>Shipping Information</h2>
+
+                <form>
+                    <label for="fullname">Full Name</label>
+                    <input type="text" id="fullname" placeholder="Enter your full name">
+
+                    <label for="contact">Contact Number</label>
+                    <input type="text" id="contact" placeholder="09XXXXXXXXX">
+
+                    <label for="address">Complete Address</label>
+                    <textarea id="address" rows="4" placeholder="House No., Street, Barangay, City, Province"></textarea>
+
+                    <h2>Payment Method</h2>
+
+                    <div class="payment-options">
+                        <label>
+                            <input type="radio" name="payment" value="gcash">
+                            GCash
+                        </label>
+
+                        <label>
+                            <input type="radio" name="payment" value="bank">
+                            Bank Transfer
+                        </label>
+
+                        <label>
+                            <input type="radio" name="payment" value="cod">
+                            Cash on Delivery
+                        </label>
+                    </div>
+
+                    <label for="proof">Upload Proof of Payment</label>
+                    <input type="file" id="proof">
+
+                    <a href="order_tracking.html" class="place-order-btn">Place Order</a>
+                </form>
+            </div>
+
+            <div class="order-summary">
+                <h2>Order Summary</h2>
+
+                <div class="summary-item">
+                    <span>Travel Backpack x1</span>
+                    <span>₱899</span>
+                </div>
+
+                <div class="summary-item">
+                    <span>Tote Bag x1</span>
+                    <span>₱499</span>
+                </div>
+
+                <hr>
+
+                <div class="summary-item">
+                    <span>Subtotal</span>
+                    <span>₱1,398</span>
+                </div>
+
+                <div class="summary-item">
+                    <span>Shipping Fee</span>
+                    <span>₱100</span>
+                </div>
+
+                <div class="summary-item total">
+                    <span>Total</span>
+                    <span>₱1,498</span>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 WanderLustBagsPH. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>
