@@ -83,6 +83,7 @@ form {
 
 .forgot-link {
     margin: -15px 0 15px;
+    font-weight: bold;
 }
 
 .forgot-link a {
@@ -129,6 +130,41 @@ form {
     color: #797259;
     text-decoration: none;
     margin: 0 8px;
+}
+
+.btn:disabled {
+    background: #b5b0a0;
+    color: #e8e4da;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+#resend-section {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #333;
+}
+
+#resend-btn {
+    background: none;
+    border: none;
+    color: #797259;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: underline;
+    padding: 0;
+}
+
+#resend-btn:disabled {
+    color: #999;
+    cursor: not-allowed;
+    text-decoration: none;
+}
+
+#timer {
+    font-weight: 600;
+    color: #797259;
 }
 
 .btn:disabled {

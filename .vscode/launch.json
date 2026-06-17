@@ -7,9 +7,8 @@
         {
             "type": "editor-browser",
             "request": "launch",
-            "name": "Launch Integrated Browser against localhost",
-            "url": "http://localhost:8080",
-            "webRoot": "${workspaceFolder}"
+            "name": "Open login.html",
+            "url": "file:///c%3A/Users/Marvin%20Sangco/Documents/GitHub/ITS122P_FINALPROJ/wanderlust_main/html/login.html"
         }
     ]
 }
