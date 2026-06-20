@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login | WanderLustBagsPH</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="../css/admin_style.css">
+</head>
+<body>
+    <div class="admin-login-wrapper">
+        <div class="admin-login-box">
+            <div class="login-logo">
+                <h2>Wander<span>Lust</span>BagsPH</h2>
+                <p>Admin Panel Login</p>
+            </div>
+
+            <form id="admin-login-form">
+                <div class="form-group">
+                    <label for="admin-email">Email Address</label>
+                    <input type="email" id="admin-email" placeholder="admin@wanderlust.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="admin-password">Password</label>
+                    <input type="password" id="admin-password" placeholder="Enter your password" required>
+                </div>
+
+                <button type="submit" class="btn-login">Login to Admin Panel</button>
+            </form>
+
+            <a href="login.html" class="back-link">
+                <i class='bx bx-arrow-back'></i> Back to User Login
+            </a>
+
+            <div id="admin-login-error" style="color:#dc3545; margin-top:12px; text-align:center; font-size:14px;"></div>
+        </div>
+    </div>
+
+    <script type="module" src="../js/admin-auth.js"></script>
+</body>
+</html>
