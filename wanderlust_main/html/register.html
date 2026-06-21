@@ -33,11 +33,15 @@
             </div>
 
 
-            <div class="input-box">
-                <input type="password" placeholder="Password" required>
-                <i class='bx bxs-lock-alt'></i>
-            </div>  
-
+          <div class="input-box">
+            <input type="password" placeholder="Password" required id="password" />
+            <i class="bx bxs-lock-alt" id="togglePassword" style="cursor:pointer;" onclick="
+              const p = document.getElementById('password');
+              p.type = p.type === 'password' ? 'text' : 'password';
+              this.classList.toggle('bxs-lock-alt');
+              this.classList.toggle('bxs-lock-open-alt');
+            "></i>
+          </div>
 
             <br>
 
