@@ -17,6 +17,7 @@
                 <li><a href="cart.html">Cart</a></li>
                 <li><a href="order_tracking.html">Orders</a></li>
                 <li><a href="profile.html">Profile</a></li>
+                 <li><a href="login.html" onclick="logout()" class="logout-btn">Logout</a></li>
             </ul>
         </nav>
     </header>
@@ -44,17 +45,19 @@
 
                     <div class="info-row">
                         <span>Full Name:</span>
-                        <p>Gavin Quain M. Cardinez</p>
+                        <p id="user-fullname"></p> 
+
+                        <!-- <p>Gavin Quain M. Cardinez</p> -->
                     </div>
 
                     <div class="info-row">
                         <span>Email:</span>
-                        <p>gavin@example.com</p>
+                        <p id="user-email"></p>
                     </div>
 
                     <div class="info-row">
                         <span>Contact Number:</span>
-                        <p>09XXXXXXXXX</p>
+                        <p id="user-contact"></p>
                     </div>
 
                     <button class="edit-btn">Edit Profile</button>
@@ -65,9 +68,9 @@
 
                 <div class="details-card">
                     <h3>Delivery Address</h3>
-                    <p>House No., Street, Barangay</p>
-                    <p>Makati City, Metro Manila</p>
-                    <p>Philippines</p>
+                    <p id="user-address"></p>
+                    <p id="user-city"></p>
+                    <p id="user-country"></p>
 
                     <button class="secondary-btn">Update Address</button>
                 </div>
@@ -75,15 +78,18 @@
                 <div class="details-card">
                     <h3>Recent Orders</h3>
 
-                    <div class="order-row">
+                    <!-- <div class="order-row">
                         <span>Order #001</span>
-                        <p>Pending</p>
+                        <p id="order-1-status"></p> 
                     </div>
+
+                    TEMPORARILY DISABLED FOR NOW
+
 
                     <div class="order-row">
                         <span>Order #002</span>
-                        <p>On the Way</p>
-                    </div>
+                        <p id="order-2-status"></p>
+                    </div> -->
 
                     <a href="order_tracking.html" class="view-orders-btn">View All Orders</a>
                 </div>
@@ -103,6 +109,8 @@
     <footer>
         <p>&copy; 2026 WanderLustBagsPH. All rights reserved.</p>
     </footer>
+
+<script src="../js/profile.js"></script>
 
 </body>
 </html>

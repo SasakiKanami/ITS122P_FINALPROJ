@@ -1,14 +1,15 @@
 import { auth, db } from "./firebase-config.js";
 import {
-        createUserWithEmailAndPassword,
-        signInWithEmailAndPassword,
-        signOut,
-        sendPasswordResetEmail
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import {
-        doc,
-        setDoc
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signOut,
+    sendPasswordResetEmail
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+    doc,
+    setDoc,
+    getDoc  // <-- Add this import
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     // ==================== REGISTER ====================
     const registerForm = document.querySelector(".form-box.register form");
@@ -55,25 +56,36 @@ import {
         });
     }
 
-    // ==================== LOGIN ====================
-    const loginForm = document.querySelector(".form-box.login form");
+// ==================== LOGIN ====================
+const loginForm = document.querySelector(".form-box.login form");
 
-    if (loginForm) {
-        loginForm.addEventListener("submit", async (e) => {
-            e.preventDefault();
+if (loginForm) {
+    loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-            const email = loginForm.querySelector("input[placeholder='Email']").value.trim(); //this should not be placeholder='Username' because we are using email to login, not username
-            const password = loginForm.querySelector("input[placeholder='Password']").value;
-            try {
-                await signInWithEmailAndPassword(auth, email, password);
-                alert("Login successful! Welcome back!");
-                window.location.href = "shop.html";
+        const email = loginForm.querySelector("input[placeholder='Email']").value.trim();
+        const password = loginForm.querySelector("input[placeholder='Password']").value;
+        
+        try {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+            
+            // Get the username from Firestore
+            const userDoc = await getDoc(doc(db, "users", user.uid));
+            const userData = userDoc.data();
+            
+            // Mark the user as logged in for pages that check sessionStorage
+            sessionStorage.setItem("isLoggedIn", "true");
+            sessionStorage.setItem("currentUser", userData.username || email); // Store username or email as fallback
+            
+            alert("Login successful! Welcome back!");
+            window.location.href = "shop.html";
 
-            } catch (error) {
-                alert("Error: " + error.message);
-            }
-        });
-    }
+        } catch (error) {
+            alert("Error: " + error.message);
+        }
+    });
+}
 
     // ==================== FORGOT PASSWORD ====================
     const forgotForm = document.querySelector("#forgot-form");
