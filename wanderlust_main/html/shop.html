@@ -5,20 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WanderLustBagsPH | Shop</title>
     <link rel="stylesheet" href="../css/shop_style.css">
-</head>
+  </head>
 <body>
 
     <header>
         <nav class="navbar">
             <h2 class="logo">WanderLustBagsPH</h2>
-
             <ul class="nav-links">
-                <li><a href="shop.html">Shop</a></li>
+                <li><a href="shop.html" class="active">Shop</a></li>
                 <li><a href="cart.html">Cart</a></li>
                 <li><a href="order_tracking.html">Orders</a></li>
                 <li><a href="profile.html">Profile</a></li>
                 <li><a href="login.html" onclick="logout()" class="logout-btn">Logout</a></li>
-
             </ul>
         </nav>
     </header>
@@ -30,46 +28,24 @@
 
     <section class="shop-section">
         <div class="shop-header">
-            <h2>Available Products</h2>
-            <input type="text" placeholder="Search bags...">
+            <h2>All Products</h2>
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search bags...">
+            </div>
+            <div class="product-count">
+                <p id="productCount">Loading products...</p>
+            </div>
         </div>
 
-        <div class="category-buttons">
-            <button>Latest Arrivals</button>
-            <button>Bags</button>
-            <button>Accessories</button>
-            <button>Others</button>
+        <div class="category-buttons" id="categoryFilters">
+            <button class="active" data-category="All">All Products</button>
+            <button data-category="Bags">Bags</button>
+            <button data-category="Accessories">Accessories</button>
+            <button data-category="Others">Others</button>
         </div>
 
-        <div class="product-container">
-
-            <div class="product-card">
-                <img src="https://files.catbox.moe/k1pif3.PNG" alt="Travel Bag">
-                <h3>Travel Backpack</h3>
-                <p class="price">₱899</p>
-                <p class="stock">Stock: Available</p>
-                <button>View Details</button>
-                <button>Add to Cart</button>
-            </div>
-
-            <div class="product-card">
-                <img src="../images/bag-placeholder.jpg" alt="Shoulder Bag">
-                <h3>Shoulder Bag</h3>
-                <p class="price">₱599</p>
-                <p class="stock">Stock: Available</p>
-                <a href="product_details.html" class="details-btn">View Details</a>
-                <button>Add to Cart</button>
-            </div>
-
-            <div class="product-card">
-                <img src="../images/bag-placeholder.jpg" alt="Tote Bag">
-                <h3>Tote Bag</h3>
-                <p class="price">₱499</p>
-                <p class="stock">Stock: Available</p>
-                <button>View Details</button>
-                <button>Add to Cart</button>
-            </div>
-
+        <div class="product-container" id="productContainer">
+            <!-- Products will be rendered here -->
         </div>
     </section>
 
@@ -77,5 +53,274 @@
         <p>&copy; 2026 WanderLustBagsPH. All rights reserved.</p>
     </footer>
 
+    <script type="module">
+        // ✅ CORRECT PATH: js/firebase-config.js
+        import { db } from "../js/firebase-config.js";
+        import { auth } from "../js/firebase-config.js";
+        import {
+            collection,
+            onSnapshot,
+            query,
+            orderBy,
+            where,
+            getDoc,
+            doc
+        } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+        // ==================== LOAD PRODUCTS ====================
+        let allProducts = [];
+
+        function loadProducts() {
+            const container = document.getElementById('productContainer');
+            const countDisplay = document.getElementById('productCount');
+            
+            if (!container) {
+                console.error('Product container not found');
+                return;
+            }
+
+            // Show loading state
+            container.innerHTML = '<div class="loading-products">🔄 Loading products...</div>';
+
+            // Query products with stock > 0
+            const q = query(
+                collection(db, "products"),
+                // where("stock", ">", 0),
+                orderBy("createdAt", "desc")
+            );
+
+            // Real-time listener
+            onSnapshot(q, (snapshot) => {
+                // Update count
+                if (countDisplay) {
+                    countDisplay.textContent = snapshot.size + ' products available';
+                }
+
+                if (snapshot.empty) {
+                    container.innerHTML = `
+                        <div class="no-products">
+                            <p>🛍️ No products available at the moment.</p>
+                            <p style="font-size:14px; color:#aaa; margin-top:5px;">Check back soon for new arrivals!</p>
+                        </div>
+                    `;
+                    allProducts = [];
+                    return;
+                }
+
+                // Store all products for filtering
+                allProducts = [];
+                container.innerHTML = '';
+
+                // Render each product
+                snapshot.forEach((docSnap) => {
+                    const product = docSnap.data();
+                    const productId = docSnap.id;
+                    
+                    // Add to allProducts array
+                    allProducts.push({
+                        id: productId,
+                        ...product
+                    });
+
+                    const productCard = document.createElement('div');
+                    productCard.className = 'product-card';
+                    productCard.dataset.category = product.category || 'Others';
+                    
+                    productCard.innerHTML = `
+                        ${product.image ? 
+                            `<img src="${product.image}" alt="${product.name}" />` :
+                            `<div class="no-image">📷 No Image</div>`
+                        }
+                        <h3>${product.name}</h3>
+                        <p class="category">${product.category || 'Uncategorized'}</p>
+                        <p class="price">₱${(product.price || 0).toLocaleString()}</p>
+                        <p class="stock ${product.stock > 0 ? 'in-stock' : 'out-of-stock'}">
+                            ${product.stock > 0 ? `✅ In Stock (${product.stock} available)` : '❌ Out of Stock'}
+                        </p>
+                        <div class="button-group">
+                            <button class="view-details" data-id="${productId}">View Details</button>
+                            <button class="add-to-cart" data-id="${productId}" ${product.stock <= 0 ? 'disabled' : ''}>
+                                ${product.stock > 0 ? '🛒 Add to Cart' : 'Out of Stock'}
+                            </button>
+                        </div>
+                    `;
+                    container.appendChild(productCard);
+                });
+
+                // Attach event listeners
+                attachEventListeners();
+
+            }, (error) => {
+                console.error('Error loading products:', error);
+                container.innerHTML = `
+                    <div class="error-message">
+                        <p>❌ Error loading products</p>
+                        <p style="font-size:14px; margin-top:10px; color:#888;">${error.message}</p>
+                        <button onclick="location.reload()" style="margin-top:15px; padding:10px 20px; border:none; background:#2c3e50; color:#fff; border-radius:5px; cursor:pointer;">Retry</button>
+                    </div>
+                `;
+            });
+        }
+
+        // ==================== EVENT LISTENERS ====================
+        function attachEventListeners() {
+            // Add to Cart buttons
+            document.querySelectorAll('.add-to-cart').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const productId = e.target.dataset.id;
+                    await addToCart(productId);
+                });
+            });
+
+            // View Details buttons
+            document.querySelectorAll('.view-details').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const productId = e.target.dataset.id;
+                    window.location.href = `product_details.html?id=${productId}`;
+                });
+            });
+        }
+
+        // ==================== ADD TO CART ====================
+        async function addToCart(productId) {
+            // Check if user is logged in
+            const user = auth.currentUser;
+            if (!user) {
+                alert('Please login to add items to cart.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                // Get product details
+                const productDoc = await getDoc(doc(db, "products", productId));
+                if (!productDoc.exists()) {
+                    alert('Product not found.');
+                    return;
+                }
+
+                const product = productDoc.data();
+                
+                // For now, just show a confirmation
+                alert(`✅ Added "${product.name}" to cart!`);
+                
+                // You can implement actual cart logic here later
+
+            } catch (error) {
+                console.error('Error adding to cart:', error);
+                alert('Error adding to cart: ' + error.message);
+            }
+        }
+
+        // ==================== SEARCH FUNCTIONALITY ====================
+        function setupSearch() {
+            const searchInput = document.getElementById('searchInput');
+            if (!searchInput) return;
+
+            searchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.trim().toLowerCase();
+                filterProducts(searchTerm);
+            });
+        }
+
+        function filterProducts(searchTerm) {
+            const productCards = document.querySelectorAll('.product-card');
+            const countDisplay = document.getElementById('productCount');
+            let visibleCount = 0;
+
+            // Reset category filter highlighting
+            document.querySelectorAll('.category-buttons button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector('.category-buttons button[data-category="All"]')?.classList.add('active');
+
+            productCards.forEach(card => {
+                const name = card.querySelector('h3')?.textContent?.toLowerCase() || '';
+                const category = card.querySelector('.category')?.textContent?.toLowerCase() || '';
+                
+                if (name.includes(searchTerm) || category.includes(searchTerm)) {
+                    card.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            if (countDisplay) {
+                countDisplay.textContent = visibleCount + ' products found';
+            }
+        }
+
+        // ==================== CATEGORY FILTERS ====================
+        function setupCategoryFilters() {
+            const buttons = document.querySelectorAll('.category-buttons button');
+            const searchInput = document.getElementById('searchInput');
+
+            buttons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const category = btn.dataset.category;
+                    
+                    // Update active state
+                    buttons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    // Clear search
+                    if (searchInput) {
+                        searchInput.value = '';
+                    }
+
+                    // Filter products
+                    const productCards = document.querySelectorAll('.product-card');
+                    const countDisplay = document.getElementById('productCount');
+                    let visibleCount = 0;
+
+                    productCards.forEach(card => {
+                        const productCategory = card.dataset.category || '';
+                        
+                        if (category === 'All' || productCategory === category) {
+                            card.style.display = 'block';
+                            visibleCount++;
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+
+                    if (countDisplay) {
+                        countDisplay.textContent = visibleCount + ' products found';
+                    }
+                });
+            });
+        }
+
+        // ==================== LOGOUT ====================
+        window.logout = async function() {
+            try {
+                await auth.signOut();
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error('Error logging out:', error);
+            }
+        };
+
+        // ==================== INIT ====================
+        // Check auth and load products
+        onAuthStateChanged(auth, (user) => {
+            // Load products regardless of auth status
+            loadProducts();
+            setupSearch();
+            setupCategoryFilters();
+            
+            // Update nav based on auth
+            if (user) {
+                console.log('👤 User logged in:', user.email);
+            } else {
+                console.log('👤 User not logged in');
+            }
+        });
+
+        console.log('🛍️ Shop page loaded!');
+        console.log('📦 Fetching products from Firestore...');
+    </script>
 </body>
 </html>
