@@ -1,47 +1,43 @@
 import { auth, db } from "./firebase-config.js";
-import { collection, getDocs, query, orderBy, limit, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { collection, getDocs, doc, getDoc, query, orderBy, limit, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-// Check if admin is logged in
+const ADMIN_EMAILS = ['admin@wanderlust.com', 'karlkenn1012@gmail.com', 'kianaaronrivera@gmail.com'];
+
+// ==================== AUTH CHECK ====================
 onAuthStateChanged(auth, async (user) => {
     if (!user) {
         window.location.href = 'admin_login.html';
         return;
     }
 
-    // Check if user has admin privileges
     const userDoc = await getDoc(doc(db, "users", user.uid));
     const userData = userDoc.data();
-    const isAdmin = userData?.isAdmin === true || 
-                    ['admin@wanderlust.com', 'marvin@wanderlust.com'].includes(user.email);
+    const isAdmin = userData?.isAdmin === true || ADMIN_EMAILS.includes(user.email);
 
     if (!isAdmin) {
         window.location.href = 'admin_login.html';
         return;
     }
 
-    // Display admin name
     document.getElementById('adminName').textContent = userData?.username || 'Admin';
     loadDashboardData();
 });
 
+// ==================== LOAD DASHBOARD ====================
 async function loadDashboardData() {
     try {
         // Get products count
         const productsSnapshot = await getDocs(collection(db, "products"));
-        const totalProducts = productsSnapshot.size;
-        document.getElementById('totalProducts').textContent = totalProducts;
+        document.getElementById('totalProducts').textContent = productsSnapshot.size;
 
-        // Get orders count
+        // Get orders count and total revenue
         const ordersSnapshot = await getDocs(collection(db, "orders"));
-        const totalOrders = ordersSnapshot.size;
-        document.getElementById('totalOrders').textContent = totalOrders;
+        document.getElementById('totalOrders').textContent = ordersSnapshot.size;
 
-        // Calculate total revenue
         let totalRevenue = 0;
         ordersSnapshot.forEach(doc => {
-            const order = doc.data();
-            totalRevenue += order.total || 0;
+            totalRevenue += doc.data().total || 0;
         });
         document.getElementById('totalRevenue').textContent = '₱' + totalRevenue.toLocaleString();
 
@@ -53,15 +49,15 @@ async function loadDashboardData() {
         const ordersQuery = query(collection(db, "orders"), orderBy("createdAt", "desc"), limit(5));
         const recentOrdersSnapshot = await getDocs(ordersQuery);
         const ordersBody = document.getElementById('recentOrders');
-        
+
         if (recentOrdersSnapshot.empty) {
             ordersBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#888;">No orders yet</td></tr>';
         } else {
             ordersBody.innerHTML = '';
             recentOrdersSnapshot.forEach(doc => {
                 const order = doc.data();
-                const statusClass = order.status === 'pending' ? 'pending' : 
-                                   order.status === 'on-way' ? 'active' : 'inactive';
+                const statusClass = order.status === 'pending' ? 'pending' :
+                                    order.status === 'on-way' ? 'active' : 'inactive';
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>#${doc.id.slice(0, 8)}</td>

@@ -9,7 +9,6 @@
 </head>
 <body>
     <div class="admin-wrapper">
-        <!-- Sidebar -->
         <aside class="admin-sidebar" id="sidebar">
             <div class="sidebar-brand">
                 <h2>Wander<span>Lust</span></h2>
@@ -26,9 +25,7 @@
             </ul>
         </aside>
 
-        <!-- Main Content -->
         <main class="admin-main">
-            <!-- Topbar -->
             <header class="admin-topbar">
                 <div class="admin-topbar-left">
                     <button class="toggle-sidebar" id="toggleSidebar">
@@ -53,7 +50,6 @@
                 </div>
             </header>
 
-            <!-- Content -->
             <div class="admin-content">
                 <!-- Stats -->
                 <div class="stats-grid">
@@ -138,13 +134,12 @@
 
     <script type="module" src="../js/admin_dashboard.js"></script>
     <script type="module">
-        // Sidebar toggle
+        import { signOut, auth } from "../js/firebase-config.js";
+
         document.getElementById('toggleSidebar').addEventListener('click', () => {
             document.getElementById('sidebar').classList.toggle('open');
         });
 
-        // Logout
-        import { signOut, auth } from "../js/firebase-config.js";
         document.getElementById('admin-logout').addEventListener('click', async (e) => {
             e.preventDefault();
             await signOut(auth);

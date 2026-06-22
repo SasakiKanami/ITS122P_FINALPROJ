@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="../css/admin_style.css">
 </head>
+
 <body>
     <div class="admin-wrapper">
         <aside class="admin-sidebar" id="sidebar">
@@ -46,10 +48,10 @@
             </header>
 
             <div class="admin-content">
-                <!-- Add Product Form -->
+                <!-- Add/Edit Product Form -->
                 <div class="section-card">
                     <div class="card-header">
-                        <h3>Add New Product</h3>
+                        <h3 id="formTitle">Add New Product</h3>
                         <button class="btn btn-primary btn-sm" id="toggleFormBtn">Toggle Form</button>
                     </div>
 
@@ -87,11 +89,45 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="productImage">Image URL</label>
-                            <input type="text" id="productImage" placeholder="https://example.com/image.jpg">
+                            <label>Product Image</label>
+                            <div id="dropZone" style="
+                                border: 2px dashed #797259;
+                                border-radius: 8px;
+                                padding: 30px;
+                                text-align: center;
+                                cursor: pointer;
+                                background: #fffef8;
+                                transition: background 0.3s;
+                            ">
+                                <i class='bx bx-image-add' style="font-size: 40px; color: #797259;"></i>
+                                <p style="color: #888; margin-top: 8px;">Drag & drop an image here or <strong>click to browse</strong></p>
+                                <input type="file" id="productImage" accept="image/*" style="display:none;">
+                            </div>
+                            <div id="imagePreview" style="margin-top:10px; display:none; position:relative; width:fit-content;">
+                                <img id="previewImg" src="" style="width:100px; height:100px; object-fit:cover; border-radius:8px;">
+                                <button type="button" id="removeImage" style="
+                                    position: absolute;
+                                    top: -8px;
+                                    right: -8px;
+                                    width: 22px;
+                                    height: 22px;
+                                    border-radius: 50%;
+                                    background: #dc3545;
+                                    color: white;
+                                    border: none;
+                                    cursor: pointer;
+                                    font-size: 14px;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                "><i class='bx bx-x'></i></button>
+                            </div>
                         </div>
 
-                        <button type="submit" class="btn btn-primary">Add Product</button>
+                        <div style="display:flex; gap:10px; margin-top:10px;">
+                            <button type="submit" class="btn btn-primary" id="submitBtn">Add Product</button>
+                            <button type="button" class="btn btn-secondary" id="cancelBtn" style="display:none;">Cancel</button>
+                        </div>
                     </form>
                 </div>
 
@@ -111,13 +147,12 @@
                                     <th>Category</th>
                                     <th>Price</th>
                                     <th>Stock</th>
-                                    <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="productsTableBody">
                                 <tr>
-                                    <td colspan="7" style="text-align:center; color:#888;">Loading products...</td>
+                                    <td colspan="6" style="text-align:center; color:#888;">Loading products...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -129,6 +164,8 @@
 
     <script type="module" src="../js/admin_products.js"></script>
     <script type="module">
+        import { signOut, auth } from "../js/firebase-config.js";
+
         document.getElementById('toggleSidebar').addEventListener('click', () => {
             document.getElementById('sidebar').classList.toggle('open');
         });
@@ -138,7 +175,6 @@
             form.style.display = form.style.display === 'none' ? 'block' : 'none';
         });
 
-        import { signOut, auth } from "../js/firebase-config.js";
         document.getElementById('admin-logout').addEventListener('click', async (e) => {
             e.preventDefault();
             await signOut(auth);
@@ -146,4 +182,5 @@
         });
     </script>
 </body>
+
 </html>

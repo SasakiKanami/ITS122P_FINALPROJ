@@ -2,7 +2,7 @@ import { auth, db } from "./firebase-config.js";
 import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-const ADMIN_EMAILS = ['admin@wanderlust.com', 'marvin@wanderlust.com']; // Add admin emails here
+const ADMIN_EMAILS = ['admin@wanderlust.com', 'karlkenn1012@gmail.com', 'kianaaronrivera@gmail.com']; // Add admin emails here
 
 document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -38,11 +38,8 @@ document.getElementById('admin-login-form').addEventListener('submit', async (e)
 
     } catch (error) {
         switch (error.code) {
-            case 'auth/user-not-found':
-                errorDiv.textContent = 'No account found with this email.';
-                break;
-            case 'auth/wrong-password':
-                errorDiv.textContent = 'Incorrect password. Please try again.';
+            case 'auth/invalid-credential':
+                errorDiv.textContent = 'Invalid email or password. Please try again.';
                 break;
             case 'auth/invalid-email':
                 errorDiv.textContent = 'Please enter a valid email address.';

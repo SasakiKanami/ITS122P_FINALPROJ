@@ -14,7 +14,7 @@ onAuthStateChanged(auth, async (user) => {
     const userDoc = await getDoc(doc(db, "users", user.uid));
     const userData = userDoc.data();
     const isAdmin = userData?.isAdmin === true || 
-                    ['admin@wanderlust.com', 'marvin@wanderlust.com'].includes(user.email);
+                    ['admin@wanderlust.com', 'karlkenn1012@gmail.com'].includes(user.email);
     if (!isAdmin) {
         window.location.href = 'admin_login.html';
         return;

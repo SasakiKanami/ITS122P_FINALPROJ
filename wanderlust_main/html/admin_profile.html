@@ -36,7 +36,7 @@
 
                 <div class="admin-topbar-right">
                     <div class="admin-user">
-                        <div class="avatar">A</div>
+                        <div class="avatar" id="adminAvatar">A</div>
                         <div class="user-info">
                             <div class="name" id="adminName">Admin</div>
                             <div class="role">Administrator</div>
@@ -67,10 +67,27 @@
                             <input type="text" value="Administrator" disabled style="background:#f5f5f5;">
                         </div>
 
+                        <div id="profileMessage" style="margin-bottom:10px; font-size:14px;"></div>
                         <button class="btn btn-primary" id="updateProfileBtn">Update Profile</button>
                     </div>
                 </div>
+            </div>
+        </main>
+    </div>
 
-                <div class="section-card" style="max-width: 600px;">
-                    <div class="card-header">
-                        <h3>Change Password</h3
+    <script type="module" src="../js/admin_profile.js"></script>
+    <script type="module">
+        import { signOut, auth } from "../js/firebase-config.js";
+
+        document.getElementById('toggleSidebar').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.toggle('open');
+        });
+
+        document.getElementById('admin-logout').addEventListener('click', async (e) => {
+            e.preventDefault();
+            await signOut(auth);
+            window.location.href = 'admin_login.html';
+        });
+    </script>
+</body>
+</html>

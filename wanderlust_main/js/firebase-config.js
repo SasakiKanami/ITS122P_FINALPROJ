@@ -1,9 +1,8 @@
 // Firebase CDN imports (no npm needed)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyCbgdHEH_htXsaDhJ72ikYtEwUJ81u7Dqw",
   authDomain: "wanderlustbagsph-816c1.firebaseapp.com",
@@ -20,4 +19,4 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 // Export so other JS files can use them
-export { auth, db };
+export { auth, db, signOut };
