@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WanderLustBagsPH | Shop</title>
     <link rel="stylesheet" href="../css/shop_style.css">
-  </head>
+</head>
 <body>
 
     <header>
@@ -64,7 +64,10 @@
             orderBy,
             where,
             getDoc,
-            doc
+            doc,
+            getDocs,
+            addDoc,
+            updateDoc
         } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
@@ -83,10 +86,9 @@
             // Show loading state
             container.innerHTML = '<div class="loading-products">🔄 Loading products...</div>';
 
-            // Query products with stock > 0
+            // Query products
             const q = query(
                 collection(db, "products"),
-                // where("stock", ">", 0),
                 orderBy("createdAt", "desc")
             );
 
@@ -202,14 +204,85 @@
 
                 const product = productDoc.data();
                 
-                // For now, just show a confirmation
-                alert(`✅ Added "${product.name}" to cart!`);
+                // Check if product is in stock
+                if (product.stock <= 0) {
+                    alert('Sorry, this product is out of stock!');
+                    return;
+                }
+
+                // Reference to user's cart in Firestore
+                const cartRef = collection(db, "carts", user.uid, "items");
                 
-                // You can implement actual cart logic here later
+                // Check if product already exists in cart
+                const q = query(cartRef, where("productId", "==", productId));
+                const querySnapshot = await getDocs(q);
+                
+                if (!querySnapshot.empty) {
+                    // Product exists - update quantity
+                    const cartItemDoc = querySnapshot.docs[0];
+                    const currentQuantity = cartItemDoc.data().quantity || 1;
+                    const newQuantity = currentQuantity + 1;
+                    
+                    // Check if enough stock
+                    if (newQuantity > product.stock) {
+                        alert(`Only ${product.stock} items available in stock!`);
+                        return;
+                    }
+                    
+                    await updateDoc(doc(db, "carts", user.uid, "items", cartItemDoc.id), {
+                        quantity: newQuantity
+                    });
+                    
+                    alert(`✅ Updated "${product.name}" quantity to ${newQuantity}!`);
+                } else {
+                    // Add new item to cart
+                    await addDoc(cartRef, {
+                        productId: productId,
+                        name: product.name,
+                        price: product.price,
+                        image: product.image || '',
+                        category: product.category || 'Uncategorized',
+                        quantity: 1,
+                        addedAt: new Date()
+                    });
+                    
+                    alert(`✅ Added "${product.name}" to cart!`);
+                }
+
+                // Update cart count in navigation
+                updateCartCount();
 
             } catch (error) {
                 console.error('Error adding to cart:', error);
                 alert('Error adding to cart: ' + error.message);
+            }
+        }
+
+        // ==================== UPDATE CART COUNT ====================
+        async function updateCartCount() {
+            const user = auth.currentUser;
+            if (!user) return;
+            
+            try {
+                const cartRef = collection(db, "carts", user.uid, "items");
+                const querySnapshot = await getDocs(cartRef);
+                
+                let totalItems = 0;
+                querySnapshot.forEach(doc => {
+                    totalItems += doc.data().quantity || 0;
+                });
+                
+                // Update cart link with count
+                const cartLink = document.querySelector('.nav-links a[href="cart.html"]');
+                if (cartLink) {
+                    if (totalItems > 0) {
+                        cartLink.textContent = `Cart (${totalItems})`;
+                    } else {
+                        cartLink.textContent = 'Cart';
+                    }
+                }
+            } catch (error) {
+                console.error('Error updating cart count:', error);
             }
         }
 
@@ -311,9 +384,10 @@
             setupSearch();
             setupCategoryFilters();
             
-            // Update nav based on auth
+            // Update cart count if logged in
             if (user) {
                 console.log('👤 User logged in:', user.email);
+                updateCartCount();
             } else {
                 console.log('👤 User not logged in');
             }
