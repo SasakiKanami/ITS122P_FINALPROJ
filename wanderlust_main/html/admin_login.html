@@ -1,46 +1,53 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login | WanderLustBagsPH</title>
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <link rel="stylesheet" href="../css/admin_style.css">
-</head>
+    <title>Admin Login | Wanderlust</title>
 
-<body>
-    <div class="admin-login-wrapper">
-        <div class="admin-login-box">
-            <div class="login-logo">
-                <h2>Wander<span>Lust</span>BagsPH</h2>
-                <p>Admin Panel Login</p>
-            </div>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../css/login_style.css" />
+  </head>
 
-            <form id="admin-login-form">
-                <div class="form-group">
-                    <label for="admin-email">Email Address</label>
-                    <input type="email" id="admin-email" placeholder="admin@wanderlust.com" required>
-                </div>
+  <body>
+    <div class="container">
+      <div class="form-box login">
+        <form id="admin-login-form">
+          <h2>Admin Login</h2>
 
-                <div class="form-group">
-                    <label for="admin-password">Password</label>
-                    <input type="password" id="admin-password" placeholder="Enter your password" required>
-                </div>
+          <div class="input-box">
+            <input type="email" id="admin-email" placeholder="Email" required />
+            <i class="bx bxs-user"></i>
+          </div>
 
-                <button type="submit" class="btn-login">Login to Admin Panel</button>
-            </form>
+          <div class="input-box">
+            <input type="password" id="admin-password" placeholder="Password" required />
+            <i class="bx bxs-lock-alt" id="togglePassword" style="cursor:pointer;" onclick="
+              const p = document.getElementById('admin-password');
+              p.type = p.type === 'password' ? 'text' : 'password';
+              this.classList.toggle('bxs-lock-alt');
+              this.classList.toggle('bxs-lock-open-alt');
+            "></i>
+          </div>
 
-            <a href="login.html" class="back-link">
-                <i class='bx bx-arrow-back'></i> Back to User Login
-            </a>
+          <div class="forgot-link">
+            <a href="admin_forgot_pass.html">Forgot password?</a>
+          </div>
 
-            <div id="admin-login-error" style="color:#dc3545; margin-top:12px; text-align:center; font-size:14px;">
-            </div>
-        </div>
+          <button type="submit" class="btn">Login to Admin Panel</button>
+
+          <div class="register-link" style="margin-top: 18px;">
+            <a href="login.html">Back to User Login</a>
+          </div>
+
+          <div id="admin-login-error" style="color:#dc3545; margin-top:12px; text-align:center; font-size:14px;">
+          </div>
+        </form>
+      </div>
     </div>
 
     <script type="module" src="../js/admin_authentication.js"></script>
-</body>
-
+  </body>
 </html>

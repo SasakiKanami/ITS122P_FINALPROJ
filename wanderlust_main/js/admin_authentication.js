@@ -1,10 +1,11 @@
 import { auth, db } from "./firebase-config.js";
 import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { isAdminUser } from "./admin_security.js";
 
-const ADMIN_EMAILS = ['admin@wanderlust.com', 'karlkenn1012@gmail.com', 'kianaaronrivera@gmail.com']; // Add admin emails here
+const adminForm = document.getElementById('admin-login-form');
 
-document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
+adminForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     const email = document.getElementById('admin-email').value.trim();
@@ -17,12 +18,9 @@ document.getElementById('admin-login-form').addEventListener('submit', async (e)
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        // Check if user is admin
+        const isAdmin = await isAdminUser(user);
         const userDoc = await getDoc(doc(db, "users", user.uid));
         const userData = userDoc.data();
-
-        // Check admin status from Firestore OR predefined admin emails
-        const isAdmin = userData?.isAdmin === true || ADMIN_EMAILS.includes(email);
 
         if (!isAdmin) {
             errorDiv.textContent = 'Access denied. You are not authorized as admin.';

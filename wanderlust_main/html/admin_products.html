@@ -133,9 +133,21 @@
 
                 <!-- Products Table -->
                 <div class="section-card">
-                    <div class="card-header">
-                        <h3>All Products</h3>
-                        <span id="productCount" style="color:#888; font-size:14px;">0 products</span>
+                    <div class="card-header" style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:12px;">
+                        <div style="display:flex; flex-direction:column; gap:6px;">
+                            <h3>All Products</h3>
+                            <span id="productCount" style="color:#888; font-size:14px;">0 products</span>
+                        </div>
+                        <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+                            <input id="productSearch" type="search" placeholder="Search products..." style="padding:10px 12px; border:1px solid #ccc; border-radius:8px; min-width:200px;">
+                            <select id="productFilterCategory" style="padding:10px 12px; border:1px solid #ccc; border-radius:8px;">
+                                <option value="All">All categories</option>
+                                <option value="Bags">Bags</option>
+                                <option value="Accessories">Accessories</option>
+                                <option value="Travel Essentials">Travel Essentials</option>
+                                <option value="Others">Others</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div class="table-wrapper">
@@ -168,11 +180,6 @@
 
         document.getElementById('toggleSidebar').addEventListener('click', () => {
             document.getElementById('sidebar').classList.toggle('open');
-        });
-
-        document.getElementById('toggleFormBtn').addEventListener('click', () => {
-            const form = document.getElementById('addProductForm');
-            form.style.display = form.style.display === 'none' ? 'block' : 'none';
         });
 
         document.getElementById('admin-logout').addEventListener('click', async (e) => {

@@ -294,7 +294,10 @@ body {
     cursor: pointer;
     border: none;
     transition: all 0.3s;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
 }
 
 .btn-primary {
@@ -352,6 +355,28 @@ body {
     border-radius: 5px;
 }
 
+/* Action buttons in table rows */
+table td:last-child {
+    vertical-align: top;
+    padding: 12px 15px;
+    width: 190px;
+    min-width: 190px;
+    max-width: 220px;
+}
+
+table td:last-child .action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+table td:last-child .action-buttons .btn {
+    margin: 0;
+    min-width: 72px;
+}
+
 /* Product Table */
 .table-wrapper {
     overflow-x: auto;
@@ -360,6 +385,7 @@ body {
 table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: auto;
 }
 
 table thead {
@@ -381,7 +407,27 @@ table td {
     padding: 12px 15px;
     border-bottom: 1px solid #f0ebe0;
     font-size: 14px;
-    vertical-align: middle;
+    vertical-align: top;
+}
+
+table td:last-child {
+    vertical-align: top;
+    width: 190px;
+    min-width: 190px;
+    max-width: 220px;
+}
+
+table td:last-child .action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+table td:last-child .btn {
+    margin: 0;
+    min-width: 72px;
 }
 
 table tr:hover {

@@ -1,33 +1,14 @@
-import { auth, db } from "./firebase-config.js";
 import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { onAdminStateChanged } from "./admin_security.js";
 
-const ADMIN_EMAILS = ['admin@wanderlust.com', 'karlkenn1012@gmail.com', 'kianaaronrivera@gmail.com'];
-
-// ==================== AUTH CHECK ====================
-onAuthStateChanged(auth, async (user) => {
-    if (!user) {
-        window.location.href = 'admin_login.html';
-        return;
-    }
-
-    const userDoc = await getDoc(doc(db, "users", user.uid));
-    const userData = userDoc.data();
-    const isAdmin = userData?.isAdmin === true || ADMIN_EMAILS.includes(user.email);
-
-    if (!isAdmin) {
-        window.location.href = 'admin_login.html';
-        return;
-    }
-
-    // Fill in profile info
+onAdminStateChanged((user, userData) => {
     document.getElementById('adminEmail').value = user.email || '';
     document.getElementById('adminDisplayName').value = userData?.username || '';
     document.getElementById('adminName').textContent = userData?.username || 'Admin';
     document.getElementById('adminAvatar').textContent = (userData?.username || 'A')[0].toUpperCase();
 
     // ==================== UPDATE PROFILE ====================
-    document.getElementById('updateProfileBtn').addEventListener('click', async () => {
+    document.getElementById('updateProfileBtn').addEventListener('click', async () => { 
         const newName = document.getElementById('adminDisplayName').value.trim();
         const profileMessage = document.getElementById('profileMessage');
 

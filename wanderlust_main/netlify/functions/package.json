@@ -1,0 +1,7 @@
+{
+  "name": "delete-cloudinary-function",
+  "private": true,
+  "dependencies": {
+    "cloudinary": "^1.39.0"
+  }
+}

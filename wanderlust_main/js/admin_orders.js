@@ -1,24 +1,7 @@
-import { auth, db } from "./firebase-config.js";
-import { 
-    collection, getDocs, doc, updateDoc, 
-    onSnapshot, query, orderBy, getDoc
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { collection, getDocs, doc, updateDoc, onSnapshot, query, orderBy, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { onAdminStateChanged } from "./admin_security.js";
 
-// Check admin auth
-onAuthStateChanged(auth, async (user) => {
-    if (!user) {
-        window.location.href = 'admin_login.html';
-        return;
-    }
-    const userDoc = await getDoc(doc(db, "users", user.uid));
-    const userData = userDoc.data();
-    const isAdmin = userData?.isAdmin === true || 
-                    ['admin@wanderlust.com', 'karlkenn1012@gmail.com'].includes(user.email);
-    if (!isAdmin) {
-        window.location.href = 'admin_login.html';
-        return;
-    }
+onAdminStateChanged((user, userData) => {
     document.getElementById('adminName').textContent = userData?.username || 'Admin';
     loadOrders();
 });

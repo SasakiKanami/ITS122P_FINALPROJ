@@ -69,26 +69,13 @@ if (loginForm) {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
             
-            // Get the username from Firestore
             const userDoc = await getDoc(doc(db, "users", user.uid));
             const userData = userDoc.data();
 
-            // Check if admin
-            const ADMIN_EMAILS = ['admin@wanderlust.com', 'karlkenn1012@gmail.com', 'kianaaronrivera@gmail.com'];
-            const isAdmin = userData?.isAdmin === true || ADMIN_EMAILS.includes(email);
-
-            if (isAdmin) {
-                sessionStorage.setItem("adminLoggedIn", "true");
-                sessionStorage.setItem("adminEmail", email);
-                sessionStorage.setItem("adminName", userData?.username || "Admin");
-                alert("Welcome, Admin!");
-                window.location.href = "admin_dashboard.html";
-            } else {
-                sessionStorage.setItem("isLoggedIn", "true");
-                sessionStorage.setItem("currentUser", userData?.username || email);
-                alert("Login successful! Welcome back!");
-                window.location.href = "shop.html";
-            }
+            sessionStorage.setItem("isLoggedIn", "true");
+            sessionStorage.setItem("currentUser", userData?.username || email);
+            alert("Login successful! Welcome back!");
+            window.location.href = "shop.html";
 
         } catch (error) {
             alert("Error: " + error.message);

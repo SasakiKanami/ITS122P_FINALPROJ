@@ -1,0 +1,3 @@
+[build]
+  publish = "wanderlust_main"
+  functions = "wanderlust_main/netlify/functions"
