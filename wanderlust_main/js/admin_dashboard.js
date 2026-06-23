@@ -1,3 +1,4 @@
+import { auth, db } from "./firebase-config.js";
 import { collection, getDocs, doc, getDoc, query, orderBy, limit, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { onAdminStateChanged } from "./admin_security.js";
 
