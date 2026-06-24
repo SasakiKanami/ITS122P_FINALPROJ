@@ -4,13 +4,13 @@ import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/fir
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCbgdHEH_htXsaDhJ72ikYtEwUJ81u7Dqw",
-  authDomain: "wanderlustbagsph-816c1.firebaseapp.com",
-  projectId: "wanderlustbagsph-816c1",
-  storageBucket: "wanderlustbagsph-816c1.firebasestorage.app",
-  messagingSenderId: "636378988315",
-  appId: "1:636378988315:web:ce8e59a66f6f4b8be21dbe",
-  measurementId: "G-TR5RS6XMTB"
+  apiKey: "{{VITE_FIREBASE_API_KEY}}",
+  authDomain: "{{VITE_FIREBASE_AUTH_DOMAIN}}",
+  projectId: "{{VITE_FIREBASE_PROJECT_ID}}",
+  storageBucket: "{{VITE_FIREBASE_STORAGE_BUCKET}}",
+  messagingSenderId: "{{VITE_FIREBASE_MESSAGING_SENDER_ID}}",
+  appId: "{{VITE_FIREBASE_APP_ID}}",
+  measurementId: "{{VITE_FIREBASE_MEASUREMENT_ID}}"
 };
 
 // Initialize Firebase

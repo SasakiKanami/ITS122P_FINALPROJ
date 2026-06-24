@@ -2,3 +2,10 @@ node_modules
 
 # Local Netlify folder
 .netlify
+
+# Environment variables
+.env
+.env.*
+
+# Generated config files
+wanderlust_main/js/firebase-config.js
