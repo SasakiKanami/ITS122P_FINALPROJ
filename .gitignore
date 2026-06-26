@@ -5,7 +5,8 @@ node_modules
 
 # Environment variables
 .env
-.env.*
+.env.local
+.env.*.local
 
 # Generated config files
 wanderlust_main/js/firebase-config.js
