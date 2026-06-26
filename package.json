@@ -3,9 +3,12 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "node build.js"
+    "build": "echo 'No build step required'"
   },
   "dependencies": {
     "firebase": "^12.15.0"
   }
+  
 }
+
+
