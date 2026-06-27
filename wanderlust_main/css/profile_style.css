@@ -224,3 +224,95 @@ footer {
     color: #e2d7c3;
     margin-top: 40px;
 }
+
+/* intl-tel-input overrides */
+.iti {
+    width: 100%;
+    margin-bottom: 12px;
+}
+
+.iti__country-container {
+    height: 40px;
+}
+
+.iti__selected-flag {
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px 0 0 5px;
+    border: 1px solid #dad6c2;
+    border-right: none;
+    background-color: #fffef8;
+    padding: 0 10px;
+    transition: all 0.3s;
+}
+
+.iti__selected-flag:hover,
+.iti__country:hover {
+    background-color: #faf9f5;
+}
+
+.iti__country {
+    background-color: #fffef8;
+    color: #3a382f;
+    font-family: 'Playfair Display', serif;
+}
+
+.iti__country.iti__highlight {
+    background-color: #faf9f5;
+}
+
+.iti__search-input {
+    padding: 10px 12px;
+    border: 1px solid #dad6c2;
+    border-radius: 5px;
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    background-color: #fffef8;
+    color: #3a382f;
+}
+
+.iti__search-input:focus {
+    outline: none;
+    border-color: #5c491f;
+    box-shadow: 0 0 0 3px rgba(92, 73, 31, 0.1);
+}
+
+.iti__country-list {
+    border: 1px solid #dad6c2;
+    border-radius: 5px;
+    background-color: #fffef8;
+    box-shadow: 0 4px 12px rgba(92, 73, 31, 0.15);
+    font-family: 'Playfair Display', serif;
+}
+
+.iti--separate-dial-code .iti__selected-flag {
+    background-color: #fffef8;
+    border-radius: 5px 0 0 5px;
+    border-right: 1px solid #dad6c2;
+}
+
+.iti--separate-dial-code .iti__selected-dial-code {
+    display: none;
+}
+
+.iti--separate-dial-code input[type="tel"] {
+    border-radius: 0 5px 5px 0;
+    border-left: none;
+    padding: 10px 14px;
+    font-family: 'Playfair Display', serif;
+    font-size: 14px;
+    background-color: #fffef8;
+    color: #3a382f;
+}
+
+.iti--separate-dial-code input[type="tel"]:focus {
+    outline: none;
+    border-color: #5c491f;
+    box-shadow: 0 0 0 3px rgba(92, 73, 31, 0.1);
+}
+
+input[type="tel"] {
+    height: 40px;
+}

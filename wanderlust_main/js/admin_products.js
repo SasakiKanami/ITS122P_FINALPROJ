@@ -37,7 +37,7 @@ async function uploadToCloudinary(file) {
 async function deleteFromCloudinary(public_id) {
     if (!public_id) return null;
 
-    const endpoints = ['/deleteCloudinaryImage', '/.netlify/functions/delete-cloudinary'];
+    const endpoints = ['/api/delete-cloudinary'];
     let lastError = null;
 
     for (const url of endpoints) {

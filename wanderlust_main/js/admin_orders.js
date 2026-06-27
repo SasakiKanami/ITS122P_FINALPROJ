@@ -1,4 +1,5 @@
-import { collection, getDocs, doc, updateDoc, onSnapshot, query, orderBy, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { db } from "./firebase-config.js";
+import { collection, getDocs, doc, updateDoc, onSnapshot, query, orderBy, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { onAdminStateChanged } from "./admin_security.js";
 
 onAdminStateChanged((user, userData) => {
@@ -62,7 +63,7 @@ function loadOrders() {
                 try {
                     await updateDoc(doc(db, "orders", orderId), {
                         status: newStatus,
-                        updatedAt: new Date()
+                        updatedAt: serverTimestamp()
                     });
                     alert('Order status updated successfully!');
                 } catch (error) {

@@ -19,17 +19,24 @@ if (registerForm) {
         e.preventDefault();
 
         const username = registerForm.querySelector("input[placeholder='Username']").value.trim();
+        const firstName = registerForm.querySelector("#reg-fname").value.trim();
+        const middleName = registerForm.querySelector("#reg-mname").value.trim();
+        const lastName = registerForm.querySelector("#reg-lname").value.trim();
+        const fullname = [firstName, middleName, lastName].filter(Boolean).join(' ');
+        const contact = registerForm.querySelector("#reg-contact").value.trim();
         const email = registerForm.querySelector("input[placeholder='Email']").value.trim();
         const password = registerForm.querySelector("input[placeholder='Password']").value;
 
         try {
-            // Create user in Firebase Auth
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
 
-            // Save extra info (username) in Firestore
             await setDoc(doc(db, "users", user.uid), {
                 username: username,
+                firstName: firstName,
+                middleName: middleName,
+                lastName: lastName,
+                contact: contact,
                 email: email,
                 createdAt: new Date(),
             });

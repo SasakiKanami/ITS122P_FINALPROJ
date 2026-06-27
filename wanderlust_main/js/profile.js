@@ -1,7 +1,7 @@
 import { auth, db } from "./firebase-config.js";
 import { 
     doc, getDoc, updateDoc, deleteDoc, 
-    collection, addDoc, getDocs, query, orderBy 
+    collection, addDoc, getDocs, query, orderBy, where 
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { 
     onAuthStateChanged, 
@@ -10,6 +10,8 @@ import {
     EmailAuthProvider,
     signOut
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+let recipientIti = null;
 
 const CLOUDINARY_CLOUD = 'dupigtgx6';
 const CLOUDINARY_PRESET = 'WanderLustBagsPH';
@@ -33,8 +35,8 @@ async function uploadAvatar(file) {
 // ==================== DELETE FROM CLOUDINARY ====================
 async function deleteFromCloudinary(public_id) {
     if (!public_id) return;
-        const endpoints = ['/deleteCloudinaryImage', '/.netlify/functions/delete-cloudinary'];
-        for (const url of endpoints) {
+    const endpoints = ['/api/delete-cloudinary'];
+    for (const url of endpoints) {
             try {
                 const res = await fetch(url, {
                     method: 'POST',
@@ -64,6 +66,18 @@ onAuthStateChanged(auth, async (user) => {
 
     if (!userData) return;
 
+    if (window.intlTelInput) {
+        const recipientInput = document.getElementById('addr-recipient-contact');
+        if (recipientInput) {
+            recipientIti = window.intlTelInput(recipientInput, {
+                initialCountry: 'ph',
+                preferredCountries: ['ph', 'us', 'gb', 'sg', 'au', 'il', 'id', 'my', 'th', 'jp', 'kr', 'cn', 'in', 'de', 'fr', 'it', 'es', 'ae', 'sa', 'ca', 'nz'],
+                separateDialCode: true,
+                utilsScript: 'https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.0/build/js/utils.js'
+            });
+        }
+    }
+
     // ==================== DISPLAY PROFILE ====================
     function displayProfile(data) {
         const setField = (id, value) => {
@@ -71,8 +85,10 @@ onAuthStateChanged(auth, async (user) => {
             if (el) el.innerText = value || 'N/A';
         };
 
-        setField('user-name', data.username);
-        setField('user-fullname', data.fullname);
+        setField('user-name', data.username ? `@${data.username}` : (data.firstName || ''));
+        setField('user-fname', data.firstName || '');
+        setField('user-mname', data.middleName || '');
+        setField('user-lname', data.lastName || '');
         setField('user-email', data.email || user.email);
         setField('user-contact', data.contact);
 
@@ -181,8 +197,11 @@ onAuthStateChanged(auth, async (user) => {
     const cancelEditBtn = document.getElementById('cancelEditBtn');
     const saveProfileBtn = document.getElementById('saveProfileBtn');
 
-    editBtn.addEventListener('click', () => {
-        document.getElementById('edit-fullname').value = userData.fullname || '';
+editBtn.addEventListener('click', () => {
+        document.getElementById('edit-username').value = userData.username || '';
+        document.getElementById('edit-fname').value = userData.firstName || '';
+        document.getElementById('edit-mname').value = userData.middleName || '';
+        document.getElementById('edit-lname').value = userData.lastName || '';
         document.getElementById('edit-contact').value = userData.contact || '';
         editForm.style.display = 'block';
         editBtn.style.display = 'none';
@@ -194,17 +213,36 @@ onAuthStateChanged(auth, async (user) => {
     });
 
     saveProfileBtn.addEventListener('click', async () => {
-        const fullname = document.getElementById('edit-fullname').value.trim();
+        const username = document.getElementById('edit-username').value.trim();
+        const firstName = document.getElementById('edit-fname').value.trim();
+        const middleName = document.getElementById('edit-mname').value.trim();
+        const lastName = document.getElementById('edit-lname').value.trim();
         const contact = document.getElementById('edit-contact').value.trim();
 
-        if (!fullname) {
-            alert('Full name cannot be empty.');
+        if (!firstName && !lastName) {
+            alert('Name cannot be empty.');
+            return;
+        }
+
+        if (username && !/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
+            alert('Username must be 3-20 characters and contain only letters, numbers, and underscores.');
             return;
         }
 
         try {
-            await updateDoc(userDocRef, { fullname, contact });
-            userData.fullname = fullname;
+            if (username && username !== userData.username) {
+                const q = query(collection(db, "users"), where("username", "==", username));
+                const snap = await getDocs(q);
+                if (!snap.empty) {
+                    alert('Username already taken. Please choose another.');
+                    return;
+                }
+            }
+            await updateDoc(userDocRef, { username, firstName, middleName, lastName, contact });
+            userData.username = username;
+            userData.firstName = firstName;
+            userData.middleName = middleName;
+            userData.lastName = lastName;
             userData.contact = contact;
             displayProfile(userData);
             editForm.style.display = 'none';
@@ -217,6 +255,14 @@ onAuthStateChanged(auth, async (user) => {
 
     // ==================== ADDRESSES ====================
     const addressesRef = collection(db, "users", user.uid, "addresses");
+
+    function formatTime12(time) {
+        if (!time) return '';
+        const [hours, minutes] = time.split(':').map(Number);
+        const period = hours >= 12 ? 'PM' : 'AM';
+        const hour12 = hours % 12 || 12;
+        return `${hour12}:${minutes.toString().padStart(2, '0')} ${period}`;
+    }
 
     async function loadAddresses() {
         const addressList = document.getElementById('addressList');
@@ -254,6 +300,20 @@ onAuthStateChanged(auth, async (user) => {
                     margin-bottom: 8px;
                     display: inline-block;
                 ">Default</span>` : ''}
+                ${address.label ? `<span style="
+                    background: #e2d7c3;
+                    color: #5c491f;
+                    font-size: 11px;
+                    padding: 2px 8px;
+                    border-radius: 10px;
+                    font-weight: 600;
+                    margin-bottom: 8px;
+                    display: inline-block;
+                    margin-left: 4px;
+                ">${address.label.toUpperCase()}</span>` : ''}
+                ${address.recipientFirstName ? `<p style="font-weight:700; color:#5c491f; margin-bottom:4px;">🎁 Recipient: ${address.recipientFirstName} ${address.recipientMiddleName ? address.recipientMiddleName[0] + '. ' : ''}${address.recipientLastName}</p>` : ''}
+                ${address.recipientContact ? `<p style="color:#797259; margin-bottom:4px;">📞 ${address.recipientContact}</p>` : ''}
+                ${address.availableTimeStart ? `<p style="color:#797259; margin-bottom:4px;">🕐 Available: ${formatTime12(address.availableTimeStart)}${address.availableTimeEnd ? ' - ' + formatTime12(address.availableTimeEnd) : ''}</p>` : ''}
                 <p style="font-weight:600; color:#5c491f;">${address.street}</p>
                 <p style="color:#797259;">${address.city}, ${address.province} ${address.zip}</p>
                 <p style="color:#797259;">${address.country}</p>
@@ -293,6 +353,16 @@ onAuthStateChanged(auth, async (user) => {
                 document.getElementById('addr-province').value = address.province || '';
                 document.getElementById('addr-zip').value = address.zip || '';
                 document.getElementById('addr-country').value = address.country || '';
+                document.getElementById('addr-label').value = address.label || 'home';
+                document.getElementById('addr-available-start').value = address.availableTimeStart || '';
+                document.getElementById('addr-available-end').value = address.availableTimeEnd || '';
+                document.getElementById('addr-recipient-fname').value = address.recipientFirstName || '';
+                document.getElementById('addr-recipient-mname').value = address.recipientMiddleName || '';
+                document.getElementById('addr-recipient-lname').value = address.recipientLastName || '';
+                document.getElementById('addr-recipient-contact').value = '';
+                if (address.recipientContact && recipientIti) {
+                    recipientIti.setNumber(address.recipientContact, true);
+                }
 
                 const addressForm = document.getElementById('addressForm');
                 addressForm.style.display = 'block';
@@ -306,6 +376,13 @@ onAuthStateChanged(auth, async (user) => {
                             province: document.getElementById('addr-province').value.trim(),
                             zip: document.getElementById('addr-zip').value.trim(),
                             country: document.getElementById('addr-country').value.trim(),
+                            label: document.getElementById('addr-label').value,
+                            availableTimeStart: document.getElementById('addr-available-start').value,
+                            availableTimeEnd: document.getElementById('addr-available-end').value,
+                            recipientFirstName: document.getElementById('addr-recipient-fname').value.trim(),
+                            recipientMiddleName: document.getElementById('addr-recipient-mname').value.trim(),
+                            recipientLastName: document.getElementById('addr-recipient-lname').value.trim(),
+                            recipientContact: recipientIti ? recipientIti.getNumber() : document.getElementById('addr-recipient-contact').value.trim(),
                         });
                         alert('Address updated successfully!');
                         resetAddressForm();
@@ -347,9 +424,16 @@ onAuthStateChanged(auth, async (user) => {
             const province = document.getElementById('addr-province').value.trim();
             const zip = document.getElementById('addr-zip').value.trim();
             const country = document.getElementById('addr-country').value.trim();
+            const label = document.getElementById('addr-label').value;
+            const availableTimeStart = document.getElementById('addr-available-start').value;
+            const availableTimeEnd = document.getElementById('addr-available-end').value;
+            const recipientFirstName = document.getElementById('addr-recipient-fname').value.trim();
+            const recipientMiddleName = document.getElementById('addr-recipient-mname').value.trim();
+            const recipientLastName = document.getElementById('addr-recipient-lname').value.trim();
+            const recipientContact = document.getElementById('addr-recipient-contact').value.trim();
 
             if (!street || !city || !province || !zip || !country) {
-                alert('Please fill in all address fields.');
+                alert('Please fill in all required address fields.');
                 return;
             }
 
@@ -359,6 +443,10 @@ onAuthStateChanged(auth, async (user) => {
 
                 await addDoc(addressesRef, {
                     street, city, province, zip, country,
+                    label,
+                    availableTimeStart, availableTimeEnd,
+                    recipientFirstName, recipientMiddleName, recipientLastName,
+                    recipientContact: recipientIti ? recipientIti.getNumber() : recipientContact,
                     isDefault: isFirst,
                     createdAt: new Date()
                 });
@@ -379,6 +467,15 @@ onAuthStateChanged(auth, async (user) => {
         document.getElementById('addr-province').value = '';
         document.getElementById('addr-zip').value = '';
         document.getElementById('addr-country').value = '';
+        document.getElementById('addr-label').value = 'home';
+        document.getElementById('addr-available-start').value = '';
+        document.getElementById('addr-available-end').value = '';
+        document.getElementById('addr-recipient-fname').value = '';
+        document.getElementById('addr-recipient-mname').value = '';
+        document.getElementById('addr-recipient-lname').value = '';
+        const recipientInput = document.getElementById('addr-recipient-contact');
+        if (recipientInput) recipientInput.value = '';
+        if (recipientIti) recipientIti.setNumber('');
     }
 
     document.getElementById('cancelAddressBtn').addEventListener('click', resetAddressForm);
