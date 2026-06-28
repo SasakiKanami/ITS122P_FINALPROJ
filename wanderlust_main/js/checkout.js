@@ -439,6 +439,7 @@ async function placeOrder(e) {
 
         const orderData = {
             userId: user.uid,
+            customerId: user.uid,
             customerName: fullName,
             contact: fullContact,
             address: addressString,
