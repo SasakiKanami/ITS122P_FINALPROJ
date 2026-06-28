@@ -17,20 +17,25 @@ function getStatusClass(status) {
         case 'confirmed': return 'confirmed';
         case 'on-way': return 'on-way';
         case 'delivered': return 'delivered';
+        case 'cancelled': return 'cancelled';
         default: return 'pending';
     }
 }
 
 function getProgressSteps(status) {
     const steps = ['Order Placed', 'Confirmed', 'On the Way', 'Received'];
-    let statusIndex = 0;
+    let statusIndex = -1;
     switch (status) {
         case 'pending': statusIndex = 0; break;
         case 'confirmed': statusIndex = 1; break;
         case 'on-way': statusIndex = 2; break;
         case 'delivered': statusIndex = 3; break;
+        case 'cancelled': statusIndex = -1; break;
     }
     return steps.map((step, index) => {
+        if (status === 'cancelled') {
+            return `<div class="step cancelled">${step}</div>`;
+        }
         if (index <= statusIndex) {
             return `<div class="step active">${step}</div>`;
         }
@@ -38,12 +43,15 @@ function getProgressSteps(status) {
     }).join('');
 }
 
-function formatTime12(time) {
-    if (!time) return '';
-    const [hours, minutes] = time.split(':').map(Number);
-    const period = hours >= 12 ? 'PM' : 'AM';
-    const hour12 = hours % 12 || 12;
-    return `${hour12}:${minutes.toString().padStart(2, '0')} ${period}`;
+function getStatusLabel(status) {
+    switch (status) {
+        case 'pending': return 'Pending';
+        case 'confirmed': return 'Confirmed';
+        case 'on-way': return 'On the Way';
+        case 'delivered': return 'Delivered';
+        case 'cancelled': return 'Cancelled';
+        default: return 'Pending';
+    }
 }
 
 function formatDate(timestamp) {
@@ -56,16 +64,32 @@ function formatDate(timestamp) {
     });
 }
 
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
 function renderOrderCard(order) {
     const statusClass = getStatusClass(order.status);
-    const statusLabel = {
-        'pending': 'Pending',
-        'confirmed': 'Confirmed',
-        'on-way': 'On the Way',
-        'delivered': 'Delivered'
-    }[order.status] || 'Pending';
+    const statusLabel = getStatusLabel(order.status);
 
-    const itemsList = (order.items || []).map(item => `${item.name} x${item.quantity}`).join(', ');
+    const itemsList = (order.items || []).map(item => `
+        <div class="order-item">
+            ${item.image ? `<img src="${item.image}" alt="${item.name}" />` : ''}
+            <div class="order-item-info">
+                <p class="order-item-name">${item.name || 'Unknown Item'}</p>
+                <p class="order-item-qty">Qty: ${item.quantity || 1} × ₱${(item.price || 0).toLocaleString()}</p>
+            </div>
+        </div>
+    `).join('');
+
+    const proofSection = order.paymentProof ? `
+        <div class="proof-section">
+            <strong>Proof of Payment:</strong>
+            <img src="${order.paymentProof}" class="proof-img" title="Click to enlarge" onclick="window.openProofModal && window.openProofModal('${order.paymentProof.replace(/'/g, "\\'")}')" />
+        </div>
+    ` : '';
 
     return `
         <div class="order-card">
@@ -78,17 +102,23 @@ function renderOrderCard(order) {
             </div>
 
             <div class="order-content">
-                <p><strong>Items:</strong> ${itemsList || 'N/A'}</p>
+                <div class="order-items">
+                    ${itemsList || '<p>No items</p>'}
+                </div>
                 ${order.label ? `<p><strong>Label:</strong> ${order.label.toUpperCase()}</p>` : ''}
-                ${order.availableTimeStart ? `<p><strong>Delivery Time:</strong> ${formatTime12(order.availableTimeStart)}${order.availableTimeEnd ? ' - ' + formatTime12(order.availableTimeEnd) : ''}</p>` : ''}
-                <p><strong>Total Amount:</strong> ₱${(order.total || 0).toLocaleString()}</p>
+                <p><strong>Total Items:</strong> ₱${(order.subtotal || 0).toLocaleString()}</p>
+                ${order.shippingFee > 0 ? `<p><strong>Shipping Fee (Cash on Delivery):</strong> ₱${order.shippingFee.toLocaleString()}</p>` : ''}
+                <p><strong>Total Due:</strong> ₱${((order.subtotal || 0) + (order.shippingFee || 0)).toLocaleString()}</p>
                 <p><strong>Payment Method:</strong> ${order.paymentMethod || 'N/A'}</p>
                 <p><strong>Delivery Address:</strong> ${order.address || 'N/A'}</p>
                 <p><strong>Contact:</strong> ${order.contact || 'N/A'}</p>
-            </div>
-
-            <div class="tracking-progress">
-                ${getProgressSteps(order.status)}
+                ${proofSection}
+                ${order.trackingInfo ? `
+                    <div class="tracking-info-section">
+                        <strong>Delivery Tracking:</strong>
+                        <p class="tracking-info-text">${escapeHtml(order.trackingInfo)}</p>
+                    </div>
+                ` : ''}
             </div>
         </div>
     `;
@@ -101,9 +131,22 @@ function renderOrders(orders, searchTerm = '') {
 
     let filteredOrders = orders;
     if (searchTerm) {
-        filteredOrders = orders.filter(order => 
-            order.id.slice(0, 8).toLowerCase().includes(searchTerm.toLowerCase())
-        );
+        const term = searchTerm.toLowerCase();
+        filteredOrders = orders.filter(order => {
+            const orderId = order.id.slice(0, 8).toLowerCase();
+            const customerName = (order.customerName || '').toLowerCase();
+            const formattedDate = formatDate(order.createdAt).toLowerCase();
+            const paymentMethod = (order.paymentMethod || '').toLowerCase();
+            const total = (order.total || 0).toLocaleString();
+
+            return (
+                orderId.includes(term) ||
+                customerName.includes(term) ||
+                formattedDate.includes(term) ||
+                paymentMethod.includes(term) ||
+                total.includes(term)
+            );
+        });
     }
 
     const ordersSection = document.querySelector('.orders-section');
@@ -120,27 +163,31 @@ function renderOrders(orders, searchTerm = '') {
         return;
     }
 
-    const html = `
+    const cardsHtml = filteredOrders.map(order => renderOrderCard(order)).join('');
+
+    ordersSection.innerHTML = `
         <h1>Order Tracking</h1>
         <p class="orders-description">View your order history and check the current status of your purchases.</p>
 
         <div class="search-order">
-            <input type="text" id="searchOrderInput" placeholder="Enter order number..." value="${searchTerm}">
+            <input type="text" id="searchOrderInput" placeholder="Search by order #, customer, date, or payment method..." value="${searchTerm}">
             <button id="searchOrderBtn">Search Order</button>
         </div>
 
-        ${filteredOrders.map(order => renderOrderCard(order)).join('')}
+        ${cardsHtml}
     `;
-    ordersSection.innerHTML = html;
 
     const searchInput = document.getElementById('searchOrderInput');
     const searchBtn = document.getElementById('searchOrderBtn');
+
     if (searchInput && searchBtn) {
         searchBtn.addEventListener('click', () => {
-            renderOrders(userOrders, searchInput.value.trim());
+            renderOrders(orders, searchInput.value.trim());
         });
-        searchInput.addEventListener('input', (e) => {
-            renderOrders(userOrders, e.target.value.trim());
+        searchInput.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') {
+                renderOrders(orders, searchInput.value.trim());
+            }
         });
     }
 }
@@ -164,7 +211,6 @@ function loadOrders() {
 
     const ordersRef = collection(db, "orders");
 
-    // Query by customerId (what checkout.js saves)
     const q = query(
         ordersRef,
         where("customerId", "==", user.uid),
@@ -191,6 +237,16 @@ function loadOrders() {
         }
     });
 }
+
+// Proof modal for customer view
+window.openProofModal = function(imageSrc) {
+    const modal = document.getElementById('proofModal');
+    const modalImg = document.getElementById('proofModalImage');
+    if (modal && modalImg) {
+        modalImg.src = imageSrc;
+        modal.style.display = 'flex';
+    }
+};
 
 // ==================== LOGOUT ====================
 window.logout = async function() {

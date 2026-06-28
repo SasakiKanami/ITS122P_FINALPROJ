@@ -126,7 +126,9 @@ ITS122P_FINALPROJ/
 - Browse all products with search and category filtering
 - Product detail pages with quantity selection and stock display
 - Add to cart, update quantities, remove items
-- Payment methods management: Admin-managed payment methods (GCash, Maya, Bank Transfer, etc.) display dynamically on checkout with account credentials
+- Checkout with proof of payment upload (images only) and delivery address selection
+- Order tracking page with real-time status updates, search by order ID / customer / date / payment method, proof of payment preview, and delivery tracking info
+- Order summary shows items total, cash-on-delivery shipping fee (if set by admin), and total due
 - Profile management: edit name and contact, upload avatar via drag-and-drop (Cloudinary)
 - Multiple delivery addresses with default address support
 - Account deletion with re-authentication
@@ -135,7 +137,7 @@ ITS122P_FINALPROJ/
 - Separate admin login with `isAdmin` Firestore flag check
 - Dashboard with stats: total revenue, products, orders, users; recent orders table; low-stock alerts
 - Full product CRUD: add, edit, delete with drag-and-drop Cloudinary image upload
-- Order management: view all orders, update order statuses
+- Order management: view all orders, update order statuses, cancel orders (with automatic stock restoration), view full order details, add delivery tracking info, and set cash-on-delivery shipping fee per order
 - User management: view all registered users and their roles
 - Admin profile editing
 - **Payment Methods management**: Add, edit, delete custom payment methods (e-wallets, bank transfers); Active/Inactive toggle controls visibility on checkout

@@ -325,7 +325,7 @@ function renderCartItems() {
     });
 
     const subtotal = currentCartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const shipping = subtotal > 0 ? 100 : 0;
+    const shipping = 0;
     updateTotals(subtotal, shipping);
 }
 
@@ -427,8 +427,7 @@ async function placeOrder(e) {
             };
         });
 
-        const shippingFee = subtotal > 0 ? 100 : 0;
-        const total = subtotal + shippingFee;
+        const total = subtotal;
 
         let proofImage = null;
         if (proofInput && proofInput.files && proofInput.files[0]) {
@@ -445,7 +444,7 @@ async function placeOrder(e) {
             address: addressString,
             items: items,
             subtotal: subtotal,
-            shippingFee: shippingFee,
+            shippingFee: 0,
             total: total,
             paymentMethod: paymentMethod,
             paymentProof: proofImage,
@@ -511,7 +510,6 @@ function renderPaymentOptions() {
         return;
     }
     
-    // Render each payment method only (no COD)
     let html = '';
     
     adminPaymentMethods.forEach((method, index) => {
@@ -525,7 +523,6 @@ function renderPaymentOptions() {
     container.innerHTML = html;
     if (noMethodsMsg) noMethodsMsg.style.display = 'none';
     
-    // Auto-select first method and show credentials
     const firstRadio = container.querySelector('input[name="payment"]');
     if (firstRadio) {
         showPaymentCredentials(firstRadio.value);
@@ -556,7 +553,7 @@ function showPaymentCredentials(methodType) {
     
     let content = `<p style="margin:6px 0; font-size:15px;"><strong>Account Name:</strong> ${selectedMethod.accountName}</p>`;
     
-    const lowerName = selectedMethod.methodName.toLowerCase();
+    const lowerName = selectedMethod.methodType.toLowerCase();
     if (lowerName.includes('gcash')) {
         content += `<p style="margin:6px 0; font-size:15px;"><strong>GCash Number:</strong> ${selectedMethod.accountNumber}</p>`;
     } else if (lowerName.includes('maya') || lowerName.includes('paymaya')) {
