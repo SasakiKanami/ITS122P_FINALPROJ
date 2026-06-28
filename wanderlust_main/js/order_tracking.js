@@ -163,20 +163,19 @@ function loadOrders() {
     }
 
     const ordersRef = collection(db, "orders");
+
+    // Query by customerId (what checkout.js saves)
     const q = query(
         ordersRef,
-        where("userId", "==", user.uid),
+        where("customerId", "==", user.uid),
         orderBy("createdAt", "desc")
     );
 
-    onSnapshot(q, (snapshot) => {
-        userOrders = [];
-        snapshot.forEach(docSnap => {
-            userOrders.push({
-                id: docSnap.id,
-                ...docSnap.data()
-            });
-        });
+    return onSnapshot(q, (snapshot) => {
+        userOrders = snapshot.docs.map(docSnap => ({
+            id: docSnap.id,
+            ...docSnap.data()
+        }));
         renderOrders(userOrders);
     }, (error) => {
         console.error('Error loading orders:', error);
