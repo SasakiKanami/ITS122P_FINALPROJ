@@ -7,12 +7,23 @@
 
     <title>Admin Login | Wanderlust</title>
 
-    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+
     <link rel="stylesheet" href="../css/login_style.css" />
   </head>
 
-  <body>
+<body>
     <div class="container">
+        <div class="carousel-panel">
+            <div class="carousel-container">
+                <img src="" alt="Featured Product" class="carousel-image" id="carouselCurrent">
+                <div class="carousel-dots" id="carouselDots"></div>
+            </div>
+        </div>
+
       <div class="form-box login">
         <form id="admin-login-form">
           <h2>Admin Login</h2>
@@ -48,6 +59,10 @@
       </div>
     </div>
 
+    <footer>
+        <p>&copy; 2026 WanderLustBagsPH. All rights reserved.</p>
+    </footer>
+
     <script type="module" src="../js/admin_authentication.js"></script>
-  </body>
+</body>
 </html>

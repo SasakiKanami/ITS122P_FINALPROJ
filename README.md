@@ -128,10 +128,12 @@ ITS122P_FINALPROJ/
 - Add to cart, update quantities, remove items
 - Checkout with proof of payment upload (images only) and delivery address selection
 - Order tracking page with real-time status updates, search by order ID / customer / date / payment method, proof of payment preview, and delivery tracking info
-- Order summary shows items total, cash-on-delivery shipping fee (if set by admin), and total due
+- Order summary shows items total and total due
+- Product stock automatically deducted on order placement (restored on cancellation)
 - Profile management: edit name and contact, upload avatar via drag-and-drop (Cloudinary)
 - Multiple delivery addresses with default address support
 - Account deletion with re-authentication
+- Product carousel on login, register, and admin login pages showcasing available products
 
 ### Admin Panel
 - Separate admin login with `isAdmin` Firestore flag check

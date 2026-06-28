@@ -125,9 +125,20 @@ function renderOrderCard(order) {
 }
 
 function renderOrders(orders, searchTerm = '') {
-    const container = document.querySelector('.orders-section') || document.body;
+    const ordersSection = document.querySelector('.orders-section');
+    if (!ordersSection) return;
+
+    // Remove existing order cards but keep search bar
     const existingCards = document.querySelectorAll('.order-card');
     existingCards.forEach(card => card.remove());
+    
+    // Remove existing empty state
+    const existingEmptyState = document.querySelector('.empty-orders');
+    if (existingEmptyState) existingEmptyState.remove();
+
+    // Remove existing orders container
+    const existingOrdersContainer = document.getElementById('ordersContainer');
+    if (existingOrdersContainer) existingOrdersContainer.remove();
 
     let filteredOrders = orders;
     if (searchTerm) {
@@ -149,44 +160,43 @@ function renderOrders(orders, searchTerm = '') {
         });
     }
 
-    const ordersSection = document.querySelector('.orders-section');
-    if (!ordersSection) return;
-
-    if (filteredOrders.length === 0) {
-        ordersSection.innerHTML = `
-            <h1>Order Tracking</h1>
-            <p class="orders-description">View your order history and check the current status of your purchases.</p>
+    if (filteredOrders.length === 0 && searchTerm) {
+        // Just show "No orders found" message without replacing search bar
+        const container = document.createElement('div');
+        container.id = 'ordersContainer';
+        container.innerHTML = `
             <div class="empty-orders">
-                <p>No orders found.</p>
+                <p>No orders found matching "${escapeHtml(searchTerm)}".</p>
             </div>
         `;
+        ordersSection.appendChild(container);
         return;
     }
 
     const cardsHtml = filteredOrders.map(order => renderOrderCard(order)).join('');
 
-    ordersSection.innerHTML = `
-        <h1>Order Tracking</h1>
-        <p class="orders-description">View your order history and check the current status of your purchases.</p>
+    const container = document.createElement('div');
+    container.id = 'ordersContainer';
+    container.innerHTML = cardsHtml;
+    ordersSection.appendChild(container);
+}
 
-        <div class="search-order">
-            <input type="text" id="searchOrderInput" placeholder="Search by order #, customer, date, or payment method..." value="${searchTerm}">
-            <button id="searchOrderBtn">Search Order</button>
-        </div>
-
-        ${cardsHtml}
-    `;
-
+// Setup search handlers
+function setupSearchHandlers() {
     const searchInput = document.getElementById('searchOrderInput');
     const searchBtn = document.getElementById('searchOrderBtn');
 
     if (searchInput && searchBtn) {
-        searchBtn.addEventListener('click', () => {
-            renderOrders(orders, searchInput.value.trim());
+        // Remove any existing listeners to avoid duplicates
+        searchBtn.replaceWith(searchBtn.cloneNode(true));
+        const newSearchBtn = document.getElementById('searchOrderBtn');
+        
+        newSearchBtn.addEventListener('click', () => {
+            renderOrders(userOrders, searchInput.value.trim());
         });
         searchInput.addEventListener('keyup', (e) => {
             if (e.key === 'Enter') {
-                renderOrders(orders, searchInput.value.trim());
+                renderOrders(userOrders, searchInput.value.trim());
             }
         });
     }
@@ -223,6 +233,7 @@ function loadOrders() {
             ...docSnap.data()
         }));
         renderOrders(userOrders);
+        setupSearchHandlers();
     }, (error) => {
         console.error('Error loading orders:', error);
         const ordersSection = document.querySelector('.orders-section');
@@ -258,11 +269,20 @@ window.logout = async function() {
     }
 };
 
-const user = auth.currentUser;
-if (user) {
-    loadOrders();
-} else {
-    onAuthStateChanged(auth, (u) => {
-        if (u) loadOrders();
-    });
-}
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        loadOrders();
+    } else {
+        const ordersSection = document.querySelector('.orders-section');
+        if (ordersSection) {
+            ordersSection.innerHTML = `
+                <h1>Order Tracking</h1>
+                <p class="orders-description">View your order history and check the current status of your purchases.</p>
+                <div class="empty-orders">
+                    <p>Please login to view your orders.</p>
+                    <a href="login.html" class="shop-now-btn">Login</a>
+                </div>
+            `;
+        }
+    }
+});

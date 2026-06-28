@@ -45,6 +45,10 @@
         </div>
     </div>
 
+    <footer>
+        <p>&copy; 2026 WanderLustBagsPH. All rights reserved.</p>
+    </footer>
+
     <script type="module">
         import { auth } from "../js/firebase-config.js";
         import { sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -110,18 +114,18 @@
                         errorMessage.textContent = "Error: " + error.message;
                 }
             }
-
-            form.addEventListener("submit", async (e) => {
-                e.preventDefault();
-                await sendReset();
-            });
-
-            resendBtn.addEventListener("click", async () => {
-                clearInterval(countdown);
-                resendBtn.textContent = "Sending...";
-                await sendReset();
-            });
         }
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            await sendReset();
+        });
+
+        resendBtn.addEventListener("click", async () => {
+            clearInterval(countdown);
+            resendBtn.textContent = "Sending...";
+            await sendReset();
+        });
     </script>
 </body>
 

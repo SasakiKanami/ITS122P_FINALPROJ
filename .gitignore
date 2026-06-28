@@ -7,3 +7,6 @@ node_modules
 
 # Generated config files
 wanderlust_main/js/firebase-config.js
+
+# AI agent
+.kilo

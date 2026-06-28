@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="../css/admin_style.css">
 </head>
+
 <body>
     <div class="admin-wrapper">
         <aside class="admin-sidebar" id="sidebar">
@@ -51,7 +53,10 @@
                 <div class="section-card">
                     <div class="card-header">
                         <h3>All Orders</h3>
-                        <span id="orderCount" style="color:#888; font-size:14px;">0 orders</span>
+                        <div style="display:flex; gap:10px; align-items:center;">
+                            <input type="text" id="orderSearch" placeholder="Search orders..." style="padding:8px 12px; border:1px solid #dad6c2; border-radius:5px; font-family:'Playfair Display',serif; font-size:14px; background:#fffef8; color:#3a382f;">
+                            <span id="orderCount" style="color:#888; font-size:14px;">0 orders</span>
+                        </div>
                     </div>
 
                     <div class="table-wrapper">
@@ -77,6 +82,10 @@
                         </table>
                     </div>
                 </div>
+
+                <footer class="admin-footer">
+                    <p>&copy; 2026 WanderLustBagsPH. All rights reserved.</p>
+                </footer>
             </div>
         </main>
     </div>
@@ -280,4 +289,5 @@
         });
     </script>
 </body>
+
 </html>

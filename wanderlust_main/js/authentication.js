@@ -8,8 +8,92 @@ import {
 import {
     doc,
     setDoc,
-    getDoc  // <-- Add this import
+    getDoc,
+    collection,
+    getDocs
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// ==================== CAROUSEL FUNCTIONALITY ====================
+let carouselProducts = [];
+let carouselCurrentIndex = 0;
+let carouselTimer = null;
+
+// Get random index for initial image
+function getRandomStartIndex() {
+    return Math.floor(Math.random() * carouselProducts.length);
+}
+
+async function initCarousel() {
+    const carouselCurrent = document.getElementById('carouselCurrent');
+    const carouselDots = document.getElementById('carouselDots');
+    
+    if (!carouselCurrent) return;
+    
+    try {
+        const querySnapshot = await getDocs(collection(db, "products"));
+        carouselProducts = [];
+        querySnapshot.forEach(docSnap => {
+            const product = docSnap.data();
+            if (product.image && product.image.trim() !== '') {
+                carouselProducts.push(product);
+            }
+        });
+        
+        if (carouselProducts.length === 0) {
+            carouselCurrent.src = 'https://placehold.co/400x500/e2d7c3/5c491f?text=Explore+Products';
+            carouselCurrent.alt = 'No products available';
+            return;
+        }
+        
+        // Start with random image
+        carouselCurrentIndex = getRandomStartIndex();
+        carouselCurrent.src = carouselProducts[carouselCurrentIndex].image;
+        carouselCurrent.alt = carouselProducts[carouselCurrentIndex].name || 'Featured Product';
+        
+        // Create dots
+        carouselDots.innerHTML = carouselProducts.map((_, i) => 
+            `<span class="carousel-dot ${i === carouselCurrentIndex ? 'active' : ''}"></span>`
+        ).join('');
+        
+        // Start auto-slide
+        startCarouselAutoSlide();
+    } catch (error) {
+        console.error('Error loading carousel products:', error);
+        carouselCurrent.src = 'https://placehold.co/400x500/e2d7c3/5c491f?text=Explore+Products';
+        carouselCurrent.alt = 'Products unavailable';
+    }
+}
+
+function startCarouselAutoSlide() {
+    carouselTimer = setInterval(() => {
+        showNextCarouselSlide();
+    }, 5000);
+}
+
+function showNextCarouselSlide() {
+    if (carouselProducts.length <= 1) return;
+    
+    const carouselCurrent = document.getElementById('carouselCurrent');
+    const carouselDots = document.getElementById('carouselDots');
+    
+    if (!carouselCurrent || !carouselDots) return;
+    
+    carouselCurrentIndex = (carouselCurrentIndex + 1) % carouselProducts.length;
+    
+    // Fade effect
+    carouselCurrent.classList.add('next');
+    
+    setTimeout(() => {
+        carouselCurrent.src = carouselProducts[carouselCurrentIndex].image;
+        carouselCurrent.alt = carouselProducts[carouselCurrentIndex].name || 'Featured Product';
+        carouselCurrent.classList.remove('next');
+    }, 250);
+    
+    // Update dots
+    carouselDots.querySelectorAll('.carousel-dot').forEach((dot, i) => {
+        dot.classList.toggle('active', i === carouselCurrentIndex);
+    });
+}
 
 // ==================== REGISTER ====================
 const registerForm = document.querySelector(".form-box.register form");
@@ -118,4 +202,7 @@ if (logoutBtn) {
     });
 }
 
-// 
+// ==================== INIT CAROUSEL ====================
+document.addEventListener('DOMContentLoaded', () => {
+    initCarousel();
+}); 

@@ -53,6 +53,11 @@
         <p>&copy; 2026 WanderLustBagsPH. All rights reserved.</p>
     </footer>
 
+    <button id="floatingCartBtn" class="floating-cart-btn" title="View Cart">
+        🛒
+        <span id="floatingCartBadge" class="floating-cart-badge">0</span>
+    </button>
+
     <script type="module">
         // ✅ CORRECT PATH: js/firebase-config.js
         import { db } from "../js/firebase-config.js";
@@ -395,6 +400,40 @@
 
         console.log('🛍️ Shop page loaded!');
         console.log('📦 Fetching products from Firestore...');
+
+        // Floating cart button functionality
+        const floatingCartBtn = document.getElementById('floatingCartBtn');
+        const floatingCartBadge = document.getElementById('floatingCartBadge');
+
+        // Show/hide floating button on scroll
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 200) {
+                floatingCartBtn.classList.add('visible');
+            } else {
+                floatingCartBtn.classList.remove('visible');
+            }
+        });
+
+        // Navigate to cart when clicked
+        if (floatingCartBtn) {
+            floatingCartBtn.addEventListener('click', () => {
+                window.location.href = 'cart.html';
+            });
+        }
+
+        // Update floating cart badge - modify updateCartCount to also update floating badge
+        const originalUpdateCartCount = updateCartCount;
+        updateCartCount = async function() {
+            await originalUpdateCartCount();
+            const cartLink = document.querySelector('.nav-links a[href="cart.html"]');
+            const cartText = cartLink?.textContent || '';
+            const itemCountMatch = cartText.match(/\((\d+)\)/);
+            const itemCount = itemCountMatch ? parseInt(itemCountMatch[1]) : 0;
+            if (floatingCartBadge) {
+                floatingCartBadge.textContent = itemCount;
+                floatingCartBadge.style.display = itemCount > 0 ? 'block' : 'none';
+            }
+        };
     </script>
 </body>
 </html>

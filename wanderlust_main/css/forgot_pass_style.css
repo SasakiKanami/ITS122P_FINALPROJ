@@ -167,9 +167,13 @@ form {
     color: #797259;
 }
 
-.btn:disabled {
-    background: #b5b0a0;
-    color: #e8e4da;
-    cursor: not-allowed;
-    box-shadow: none;
+/* Footer */
+footer {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    color: #3a382f;
+    text-align: center;
 }

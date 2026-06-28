@@ -98,10 +98,6 @@
                     <span>Subtotal</span>
                     <span id="subtotal">₱0</span>
                 </div>
-                <div class="summary-row">
-                    <span>Shipping Fee</span>
-                    <span id="shippingFee">₱100</span>
-                </div>
                 <hr>
                 <div class="summary-row total">
                     <span>Total</span>
@@ -205,11 +201,9 @@
 
                 cartItemsDiv.innerHTML = html;
 
-                // Update summary
-                const shippingFee = subtotal > 0 ? 100 : 0;
+                // Update summary (shipping fee removed)
                 document.getElementById('subtotal').textContent = `₱${subtotal.toLocaleString()}`;
-                document.getElementById('shippingFee').textContent = `₱${shippingFee.toLocaleString()}`;
-                document.getElementById('total').textContent = `₱${(subtotal + shippingFee).toLocaleString()}`;
+                document.getElementById('total').textContent = `₱${subtotal.toLocaleString()}`;
 
                 // Update cart link count
                 const cartLink = document.querySelector('.nav-links a[href="cart.html"]');
