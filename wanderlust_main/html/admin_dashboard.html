@@ -111,46 +111,52 @@
                 </div>
 
                 <!-- Low Stock Products -->
-                    <div class="section-card">
-                        <div class="card-header">
-                            <h3>Low Stock Products</h3>
-                            <a href="admin_products.html" class="btn btn-primary btn-sm">Manage Products</a>
-                        </div>
-                        <div class="table-wrapper">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Image</th>
-                                        <th>Product</th>
-                                        <th>Price</th>
-                                        <th>Stock</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="lowStockProducts">
-                                    <tr>
-                                        <td colspan="5" style="text-align:center; color:#888;">No low stock products
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                <div class="section-card">
+                    <div class="card-header">
+                        <h3>Low Stock Products</h3>
+                        <a href="admin_products.html" class="btn btn-primary btn-sm">Manage Products</a>
                     </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Image</th>
+                                    <th>Product</th>
+                                    <th>Price</th>
+                                    <th>Stock</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lowStockProducts">
+                                <tr>
+                                    <td colspan="5" style="text-align:center; color:#888;">No low stock products</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
-                    <script type="module" src="../js/admin_dashboard.js"></script>
-                    <script type="module">
-                        import { signOut, auth } from "../js/firebase-config.js";
+                <footer class="admin-footer">
+                    <p>&copy; 2026 WanderLustBagsPH. All rights reserved.</p>
+                </footer>
+            </div>
+        </main>
+    </div>
 
-                        document.getElementById('toggleSidebar').addEventListener('click', () => {
-                            document.getElementById('sidebar').classList.toggle('open');
-                        });
+    <script type="module" src="../js/admin_dashboard.js"></script>
+    <script type="module">
+        import { signOut, auth } from "../js/firebase-config.js";
 
-                        document.getElementById('admin-logout').addEventListener('click', async (e) => {
-                            e.preventDefault();
-                            await signOut(auth);
-                            window.location.href = 'admin_login.html';
-                        });
-                    </script>
+        document.getElementById('toggleSidebar').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.toggle('open');
+        });
+
+        document.getElementById('admin-logout').addEventListener('click', async (e) => {
+            e.preventDefault();
+            await signOut(auth);
+            window.location.href = 'admin_login.html';
+        });
+    </script>
 </body>
 
 </html>

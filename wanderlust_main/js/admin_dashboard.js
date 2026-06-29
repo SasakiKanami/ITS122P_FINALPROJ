@@ -16,12 +16,25 @@ async function loadDashboardData() {
 
         // Get orders count and total revenue
         const ordersSnapshot = await getDocs(collection(db, "orders"));
-        document.getElementById('totalOrders').textContent = ordersSnapshot.size;
-
+        
         let totalRevenue = 0;
+        let totalOrdersCount = 0;
+        let deliveredOrdersCount = 0;
+        
         ordersSnapshot.forEach(doc => {
-            totalRevenue += doc.data().total || 0;
+            const order = doc.data();
+            // Count all non-cancelled orders
+            if (order.status !== 'cancelled') {
+                totalOrdersCount++;
+            }
+            // Only count delivered orders for revenue (actual sales)
+            if (order.status === 'delivered') {
+                deliveredOrdersCount++;
+                totalRevenue += order.total || 0;
+            }
         });
+        
+        document.getElementById('totalOrders').textContent = totalOrdersCount;
         document.getElementById('totalRevenue').textContent = '₱' + totalRevenue.toLocaleString();
 
         // Get users count

@@ -8,6 +8,9 @@
 }
 
 body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
     background: linear-gradient(135deg, #faf9f5, #e2d7c3);
     min-height: 100vh;
     color: #3a382f;
@@ -69,6 +72,8 @@ body {
 
 .checkout-section {
     padding: 40px 60px;
+
+    flex: 1;
 }
 
 .checkout-section h1 {
@@ -265,6 +270,7 @@ body {
 }
 
 footer {
+    margin-top: auto;
     text-align: center;
     padding: 20px;
     background-color: #5c491f;

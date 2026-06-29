@@ -8,11 +8,11 @@ import {
     query,
     where,
     getDocs,
-    addDoc,
     deleteDoc,
     updateDoc,
     orderBy,
-    serverTimestamp
+    serverTimestamp,
+    writeBatch
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 let iti = null;
@@ -325,8 +325,7 @@ function renderCartItems() {
     });
 
     const subtotal = currentCartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const shipping = 0;
-    updateTotals(subtotal, shipping);
+    updateTotals(subtotal);
 }
 
 async function changeQuantity(index, action) {
@@ -361,15 +360,12 @@ async function changeQuantity(index, action) {
     renderCartItems();
 }
 
-function updateTotals(subtotal, shipping) {
-    const total = subtotal + shipping;
-    const subtotalEl = document.getElementById('summarySubtotal');
-    const shippingEl = document.getElementById('summaryShipping');
+function updateTotals(subtotal) {
     const totalEl = document.getElementById('summaryTotal');
+    const subtotalEl = document.getElementById('summarySubtotal');
 
     if (subtotalEl) subtotalEl.textContent = `₱${subtotal.toLocaleString()}`;
-    if (shippingEl) shippingEl.textContent = `₱${shipping.toLocaleString()}`;
-    if (totalEl) totalEl.textContent = `₱${total.toLocaleString()}`;
+    if (totalEl) totalEl.textContent = `₱${subtotal.toLocaleString()}`;
 }
 
 async function placeOrder(e) {
@@ -415,6 +411,29 @@ async function placeOrder(e) {
         submitBtn.disabled = true;
         submitBtn.textContent = 'Placing Order...';
 
+        // Pre-fetch and validate stock availability for all items
+        const productStocks = {};
+        for (const item of currentCartItems) {
+            if (item.productId) {
+                const productDoc = await getDoc(doc(db, "products", item.productId));
+                if (!productDoc.exists()) {
+                    showMessage(`Product "${item.name}" is no longer available.`, 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Place Order';
+                    return;
+                }
+                const productData = productDoc.data();
+                const currentStock = productData.stock || 0;
+                if (currentStock < item.quantity) {
+                    showMessage(`Only ${currentStock} item(s) available for "${item.name}". Please adjust your cart.`, 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Place Order';
+                    return;
+                }
+                productStocks[item.productId] = currentStock;
+            }
+        }
+
         let subtotal = 0;
         const items = currentCartItems.map(item => {
             subtotal += item.price * item.quantity;
@@ -459,13 +478,32 @@ async function placeOrder(e) {
             updatedAt: serverTimestamp()
         };
 
-        const orderRef = await addDoc(collection(db, "orders"), orderData);
+        // Use batch to atomically create order, deduct stock, and clear cart
+        const batch = writeBatch(db);
 
+        // Create order
+        const orderRef = doc(collection(db, "orders"));
+        batch.set(orderRef, orderData);
+
+        // Deduct stock from products
+        for (const item of currentCartItems) {
+            if (item.productId && productStocks[item.productId] !== undefined) {
+                const currentStock = productStocks[item.productId];
+                const newStock = Math.max(0, currentStock - item.quantity);
+                batch.update(doc(db, "products", item.productId), {
+                    stock: newStock
+                });
+            }
+        }
+
+        // Clear cart items
         const cartRef = collection(db, "carts", user.uid, "items");
         const cartSnapshot = await getDocs(cartRef);
-        for (const docSnap of cartSnapshot.docs) {
-            await deleteDoc(doc(db, "carts", user.uid, "items", docSnap.id));
-        }
+        cartSnapshot.forEach(docSnap => {
+            batch.delete(doc(db, "carts", user.uid, "items", docSnap.id));
+        });
+
+        await batch.commit();
 
         showMessage('Order placed successfully! Redirecting...', 'success');
 

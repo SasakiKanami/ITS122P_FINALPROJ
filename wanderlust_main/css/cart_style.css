@@ -11,6 +11,8 @@ body {
     background: linear-gradient(135deg, #faf9f5, #e2d7c3);
     min-height: 100vh;
     color: #3a382f;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Navbar */
@@ -59,10 +61,9 @@ body {
     color: #5c491f !important;
 }
 
-
-/* Cart Section */
 .cart-section {
     padding: 50px 60px;
+    flex: 1;
 }
 
 .cart-section h1 {
@@ -236,5 +237,5 @@ footer {
     padding: 20px;
     background-color: #5c491f;
     color: #e2d7c3;
-    margin-top: 40px;
+    margin-top: auto;
 }
