@@ -1,20 +1,16 @@
 {
   "version": 2,
+  "buildCommand": "node build.js",
+  "outputDirectory": "wanderlust_main",
   "builds": [
-    {
-      "src": "build.js",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["wanderlust_main/js/firebase-config-template.js"]
-      }
-    },
     {
       "src": "api/delete-cloudinary.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
+    { "src": "/api/delete-cloudinary", "dest": "/api/delete-cloudinary.js" },
     { "handle": "filesystem" },
-    { "src": "/api/delete-cloudinary", "dest": "/api/delete-cloudinary.js" }
+    { "src": "/(.*)", "dest": "/$1" }
   ]
 }

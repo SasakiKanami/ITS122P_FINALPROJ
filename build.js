@@ -1,21 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-function parseEnv(filePath) {
-  const env = {};
-  if (!fs.existsSync(filePath)) return env;
-  const content = fs.readFileSync(filePath, 'utf8');
-  content.split(/\r?\n/).forEach(line => {
-    line = line.trim();
-    if (!line || line.startsWith('#')) return;
-    const [key, ...rest] = line.split('=');
-    if (key) env[key.trim()] = rest.join('=').trim().replace(/^"|"$/g, '');
-  });
-  return env;
-}
-
-const envPath = path.join(__dirname, '.env');
-const env = parseEnv(envPath);
+const env = process.env; // ← reads from Vercel environment variables
 
 const configPath = path.join(__dirname, 'wanderlust_main', 'js', 'firebase-config-template.js');
 const outputPath = path.join(__dirname, 'wanderlust_main', 'js', 'firebase-config.js');
