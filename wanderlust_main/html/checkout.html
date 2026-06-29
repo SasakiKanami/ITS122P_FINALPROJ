@@ -9,19 +9,30 @@
 </head>
 <body>
 
-    <header>
-        <nav class="navbar">
-            <h2 class="logo">WanderLustBagsPH</h2>
+<header>
+    <nav class="navbar">
+        <h2 class="logo">WanderLustBagsPH</h2>
 
-            <ul class="nav-links">
-                <li><a href="shop.html">Shop</a></li>
-                <li><a href="cart.html">Cart</a></li>
-                <li><a href="order_tracking.html">Orders</a></li>
-                <li><a href="profile.html">Profile</a></li>
-                <li><a href="login.html">Login</a></li>
-            </ul>
-        </nav>
-    </header>
+        <ul class="nav-links">
+            <li><a href="shop.html" class="nav-away">Shop</a></li>
+            <li><a href="cart.html" class="nav-away">Cart</a></li>
+            <li><a href="order_tracking.html" class="nav-away">Orders</a></li>
+            <li><a href="profile.html" class="nav-away">Profile</a></li>
+        </ul>
+    </nav>
+</header>
+
+<script>
+    document.querySelectorAll('.nav-away').forEach(link => {
+        link.addEventListener('click', function (e) {
+            e.preventDefault();
+            const confirmed = confirm("Leave checkout? Your order won't be placed if you leave this page.");
+            if (confirmed) {
+                window.location.href = this.href;
+            }
+        });
+    });
+</script>
 
     <section class="hero">
         <h1>Checkout</h1>
